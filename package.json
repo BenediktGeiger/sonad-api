@@ -1,0 +1,63 @@
+{
+  "name": "eesti",
+  "version": "1.0.0",
+  "description": "eesti",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "debug": "tsc --sourcemap",
+    "lint": "eslint ./lib --ext .ts",
+    "prettier-format": "prettier --config .prettierrc 'lib/**/*.ts' --write"
+  },
+  "files": [
+    "/lib"
+  ],
+  "_moduleAliases": {
+    "@lib": "dist"
+  },
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "tubli": "./lib/user-interfaces/cli/cli.js"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/htmlparser2": "^3.10.3",
+    "@types/node": "^18.7.6",
+    "@types/node-fetch": "^2.6.2",
+    "@types/request-ip": "^0.0.37",
+    "@types/url-join": "^4.0.1",
+    "body-parser": "^1.20.0",
+    "cli-table": "^0.3.11",
+    "cors": "^2.8.5",
+    "domutils": "^2.8.0",
+    "dotenv": "^16.0.1",
+    "express": "^4.17.3",
+    "fetch-cookie": "^2.0.3",
+    "htmlparser2": "^7.2.0",
+    "ioredis": "^5.2.2",
+    "module-alias": "^2.2.2",
+    "node-fetch": "^2.2.0",
+    "nunjucks": "^3.2.3",
+    "redis": "^4.2.0",
+    "request-ip": "^3.3.0",
+    "typescript": "^4.7.4",
+    "url-join": "^4.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
+    "concurrently": "^7.2.2",
+    "eslint": "^8.20.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jsdoc": "^3.6.10",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.6.1",
+    "typescript-eslint": "0.0.1-alpha.0",
+    "winston": "^3.8.1"
+  }
+}

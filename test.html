@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="et">
+
+<head>
+	<title>Otsing</title>
+	<!-- Common styles and scripts -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+	<link rel="icon" type="image/png" href="/favicon.png" />
+	<link rel="icon" type="image/x-icon" href="/favicon.ico">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+
+
+
+	<link rel="stylesheet" href="/view/css/jquery-ui.min.css" />
+	<link rel="stylesheet" href="/view/css/styles.css" />
+
+
+	<script type="text/javascript" src="/view/js/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="/view/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/view/js/jquery.serializejson.js"></script>
+	<script type="text/javascript" src="/view/js/popper.min.js"></script>
+	<script type="text/javascript" src="/view/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/view/js/simple-lightbox.js"></script>
+	<script type="text/javascript" src="/view/js/ww-common-app.js"></script>
+	<script type="text/javascript" src="/view/js/lazysizes.min.js"></script>
+
+
+
+
+	<script type="text/javascript" src="/view/js/recorder.js"></script>
+	<script type="text/javascript" src="/view/js/ww-common-audio.js"></script>
+	<script type="text/javascript" src="/view/js/ww-common-search.js"></script>
+	<script type="text/javascript" src="/view/js/ww-search.js"></script>
+	<script type="text/javascript" src="/view/js/ww-horizontal-scroll-panel.js"></script>
+
+	<script>
+		var applicationUrl = "\/";
+	var sessionTimeoutSec = 3600;
+	var feedbackServiceUrl = "https:\/\/ekilex.ee\/send_feedback";
+	var messages = {
+		'this_is_form' : "see on ka vorm s\u00F5nadest",
+		'audio_generation_failure' : "Heli genereerimise teenus hetkel ei toimi, proovige hiljem uuesti",
+		'search_failure' : "Detailide p\u00E4ring eba\u00F5nnestus, proovige hiljem uuesti",
+		'fb_service_error' : "Tagasiside teenus ei ole seadistatud"
+	}
+	</script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-134441495-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-134441495-1');
+	</script>
+</head>
+
+<body>
+	<div>
+
+		<a class="sr-only sr-only-focusable" role="button" href="#search">Otsingu juurde</a>
+
+
+		<a class="sr-only sr-only-focusable" role="button" href="#main">Põhisisu juurde</a>
+
+	</div>
+
+
+
+
+
+
+	<div class="container-fluid header-container">
+		<div class="row header-wrap">
+			<div class="col-12 d-flex align-items-center px-xl-0">
+				<div class="mr-auto">
+					<a href="/" aria-label="Pealehele" role="link" class="logo logo-header">
+						<span class="sr-only">Sõnaveebi logo</span>
+					</a>
+				</div>
+				<div class="search-panel w-100">
+					<div class="align-self-center" id="language-detail-panel">
+
+						<div class="main-search compact">
+							<form action="/search/unif" method="post" name="searchForm">
+								<div>
+									<input id="search" type="text" role="search" class="main-search-input form-control search-phrase compact"
+                 name="searchWord"
+                 value="maja" placeholder="Otsi sõnade tähendusi ja tõlkeid" />
+									<input type="hidden" name="destinLangsStr" value="dlall" />
+									<input type="hidden" name="datasetCodesStr" value="dsall" />
+									<input type="hidden" name="selectedWordHomonymNr" />
+        </div>
+									<div class="main-search-btns">
+										<button aria-label="Puhasta otsing" id="clear-search-btn" type="button" class="btn btn-icon clear-btn" style="display: none;">
+            <span class="fas fa-times"></span>
+          </button>
+										<button type="button" id="start-rec-btn" class="btn btn-icon speak-btn" title="Dikteeri">
+            <span class="fas fa-microphone"></span>
+          </button>
+										<button type="button" aria-label="Lõpeta otsimine" id="stop-rec-btn" class="btn btn-icon" hidden>Lõpeta</button>
+										<button aria-label="Otsi" id="search-btn" type="submit" class="btn btn-success search-btn">
+            <span class="fas fa-search"></span>
+          </button>
+									</div>
+							</form>
+						</div>
+
+					</div>
+				</div>
+
+				<div class="ml-auto d-flex flex-row align-items-center">
+					<div class="dropdown lang-btn d-none d-md-block">
+						<a href="#" aria-label="Vali keel" role="button" class="dropdown-toggle" id="uiLangMenuButton"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span>EST</span>
+						</a>
+						<div class="dropdown-menu" data-target="uiLangMenuButton" aria-expanded="true"
+							aria-labelledby="uiLangMenuButton">
+							<a role="link" class="dropdown-item" href="?lang=et">EST</a>
+							<a role="link" class="dropdown-item" href="?lang=ru">RUS</a>
+							<a role="link" class="dropdown-item" href="?lang=en">ENG</a>
+						</div>
+					</div>
+					<button class="btn menu-btn btn-link align-items-center text-uppercase d-flex position-relative " aria-label="Collapsed" data-toggle="collapse" data-target="#headerLinks">
+        <span class="d-none d-md-block">Menüü</span>
+        <span class="icon icon-menu p-0 ml-md-2"></span>
+      </button>
+
+					<div id="headerLinks" class="navbar navbar-dark collapse">
+						<div class="header-links navbar-nav" role="navbar">
+							<div class="d-flex mb-4">
+								<button class="btn menu-btn px-0 ml-auto text-white" data-toggle="collapse" data-target="#headerLinks">
+            <span>Sulge</span>
+            <span class="fas fa-times"></span>
+          </button>
+							</div>
+							<div class="dropdown lang-btn d-md-none pl-0 pt-0">
+								<a href="#" aria-label="Vali keel" role="button" class="dropdown-toggle text-white "
+									id="uiLangMenuButton" data-toggle="dropdown" aria-haspopup="true"
+									aria-expanded="false">
+									<span>EST</span>
+								</a>
+								<div class="dropdown-menu" data-target="uiLangMenuButton" aria-expanded="true"
+									aria-labelledby="uiLangMenuButton">
+									<a role="link" class="dropdown-item" href="?lang=et">EST</a>
+									<a role="link" class="dropdown-item" href="?lang=ru">RUS</a>
+									<a role="link" class="dropdown-item" href="?lang=en">ENG</a>
+								</div>
+							</div>
+							<a href="/" class="nav-link menu-item" data-item-name="search-unif">
+								<span>Sõnaveeb</span>
+							</a>
+							<a href="/lite" target="_blank" class="nav-link menu-item" data-item-name="search-lite">
+								<span>Keeleõppija Sõnaveeb</span>
+								<i class="fas fa-external-link-alt" aria-hidden="true"></i>
+							</a>
+							<a href="/about" class="nav-link menu-item" data-item-name="about">
+								<span>Portaalist</span>
+							</a>
+							<a href="/teacher-tools" class="nav-link menu-item" data-item-name="ttools">
+								<span>Õpetaja tööriistad</span>
+							</a>
+							<a href="/learn" class="nav-link menu-item" data-item-name="learn">
+								<span>Õpime eesti keelt</span>
+							</a>
+							<a aria-hidden="true" href="/games" class="nav-link menu-item" data-item-name="games">
+								<span>Keelemängud</span>
+							</a>
+							<a href="/contacts" class="nav-link menu-item" data-item-name="contacts">
+								<span>Kontakt</span>
+							</a>
+							<a href="/#" role="button" data-toggle="modal" data-target="#feedbackModal"
+								class="nav-link menu-item" data-item-name="feedback">
+								<span>Tagasiside</span>
+							</a>
+							<a class="menu-item" href="#">
+								<!-- For WCAG focus trap. Not to be removed -->
+							</a>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="feedbackModal" tabindex="-1" aria-model="true" role="dialog"
+		aria-labelledby="feedbackModal" aria-hidden="false" aria-describedby="feebackMaterial">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Tagasiside</h5>
+					<a href="#" class="close" data-dismiss="modal" tabindex="0" aria-label="Close">
+						<span class="fa fa-times"></span>
+					</a>
+				</div>
+				<div id="dataDiv" class="modal-body">
+					<div class="mb-3 ml-1 row" id="feedbackMaterial">
+						<div class="custom-control custom-radio col-12 col-md-6">
+							<div>
+								<input type="radio" id="feedbackSimpleRadio" checked name="feedbackRadio" class="custom-control-input">
+								<label class="custom-control-label" for="feedbackSimpleRadio">Üldkeel (lihtne vorm)</label>
+							</div>
+							<div>
+								<small>Sobib üldkeele küsimuse jaoks.</small>
+							</div>
+						</div>
+						<div class="custom-control custom-radio col-12 col-md-6">
+							<div>
+								<input type="radio" id="feedbackCompleteRadio" name="feedbackRadio" class="custom-control-input">
+								<label class="custom-control-label" for="feedbackCompleteRadio">Termin (täielik vorm)</label>
+							</div>
+							<div>
+								<small>Sobib terminiküsimuse jaoks.</small>
+							</div>
+						</div>
+					</div>
+					<small>* Tärniga tähistatud väljad on kohustuslikud</small>
+					<div id="feedWord" class="formarea show-section">
+
+						<form id="newWordForm" class="needs-validation" novalidate>
+							<div class="form-row">
+								<div class="form-group col-12">
+									<label class="positive-feedback" hidden name="ok_message">Aitäh, oleme tagasiside kätte saanud. Tegeleme sellega esimesel võimalusel</label>
+									<label class="negative-feedback" hidden name="error_message">Saadetud andmed on vigased. Kontrollige palun andmeid ning proovige uuesti</label>
+									<input type="hidden" name="feedbackType" value="simple">
+									<input type="hidden" name="lastSearch" value="maja">
+        </div>
+								</div>
+								<div class="form-row">
+									<div class="form-group col-12">
+										<label for="descriptionInput" class="col-form-label">Probleemi lühikirjeldus</label>
+										<span>*</span>
+										<input id="descriptionInput" type="text" class="form-control" name="description" required>
+										<div class="invalid-feedback">Väli on kohustuslik!</div>
+									</div>
+								</div>
+								<div class="form-row">
+									<div class="form-group col-12">
+										<label for="wordInput" class="col-form-label">Sõna või väljend</label>
+										<input id="wordInput" type="text" class="form-control" name="word">
+        </div>
+									</div>
+									<div class="form-row">
+										<div class="form-group col-12">
+											<label for="definitionInput" class="col-form-label">Tähendus</label>
+											<input id="definitionInput" type="text" class="form-control" name="definition">
+        </div>
+										</div>
+										<div class="form-row">
+											<div class="form-group col-12">
+												<label for="usageInput" class="col-form-label">Näitelause</label>
+												<input id="usageInput" type="text" class="form-control" name="usage">
+        </div>
+											</div>
+											<div class="form-row">
+												<div class="form-group col-12">
+													<label for="otherInfoInput" class="col-form-label">Muu info</label>
+													<input id="otherInfoInput" type="text" class="form-control" name="otherInfo">
+        </div>
+												</div>
+												<div class="form-row">
+													<div class="form-group col-12 col-md-6">
+														<label for="nameInput" class="col-form-label">Ees- ja perekonnanimi</label>
+														<span>*</span>
+														<input id="nameInput" type="text" class="form-control" name="senderName" required>
+														<div class="invalid-feedback">Väli on kohustuslik!</div>
+													</div>
+													<div class="form-group col-12 col-md-6">
+														<label for="emailInput" class="col-form-label">E-post</label>
+														<span>*</span>
+														<input id="emailInput" type="email" class="form-control form-email" name="senderEmail" required>
+														<div class="invalid-feedback">Väli on kohustuslik!</div>
+													</div>
+												</div>
+												<div class="form-row">
+													<div class="form-group col-12">
+														<label for="companyInput" class="col-form-label">Asutus</label>
+														<input id="companyInput" type="text" class="form-control" name="company">
+        </div>
+													</div>
+													<div class="form-row">
+														<div class="form-group col-12">
+															<div class="custom-control custom-checkbox mt-2">
+																<input type="checkbox" class="custom-control-input modal-check" id="modalCheck" required>
+																<label class="custom-control-label" for="modalCheck">
+              <span>Lisades uue sõna või kommentaari nõustud</span>
+              <a role="link" href="/regulations" data-item-name="regulations">kasutus- ja privaatsustingimustega</a>
+              <span>&nbsp;&ast;</span>
+            </label>
+																<div class="invalid-feedback">Väli on kohustuslik!</div>
+															</div>
+														</div>
+													</div>
+													<div class="form-group">
+														<div class="col-12 p-0 mt-2">
+															<div class="text-right">
+																<button type="button" class="btn btn-outline-success mr-3" data-dismiss="modal">Tühistan</button>
+																<button type="button" class="btn btn-success" name="feedbackSendBtn" disabled>Saadan</button>
+															</div>
+														</div>
+													</div>
+						</form>
+
+					</div>
+					<div id="feedComment" class="formarea">
+
+						<form id="commentForm" class="needs-validation" novalidate>
+							<div class="form-row">
+								<div class="form-group col-12">
+									<label class="positive-feedback" hidden name="ok_message">Aitäh, oleme tagasiside kätte saanud. Tegeleme sellega esimesel võimalusel</label>
+									<label class="negative-feedback" hidden name="error_message">Saadetud andmed on vigased. Kontrollige palun andmeid ning proovige uuesti</label>
+									<input type="hidden" name="feedbackType" value="complete">
+									<input type="hidden" name="lastSearch" value="maja">
+        </div>
+								</div>
+								<div class="form-row">
+									<div class="form-group col-12">
+										<label for="descriptionInput2" class="col-form-label">Probleemi lühikirjeldus</label>
+										<span>*</span>
+										<input id="descriptionInput2" type="text" class="form-control" name="description" required>
+										<div class="invalid-feedback">Väli on kohustuslik!</div>
+									</div>
+								</div>
+								<div class="form-row">
+									<div class="form-group col-12">
+										<label for="wordInput2" class="col-form-label">Termin</label>
+										<input id="wordInput2" type="text" class="form-control" name="word">
+        </div>
+									</div>
+									<div class="form-row">
+										<div class="form-group col-12">
+											<label for="domainInput" class="col-form-label">Valdkond</label>
+											<input id="domainInput" type="text" class="form-control" name="domain">
+        </div>
+										</div>
+										<div class="form-row">
+											<div class="form-group col-12">
+												<label for="usageInput2" class="col-form-label">Näitelause või tekstilõik, kus termin esineb</label>
+												<input id="usageInput2" type="text" class="form-control" name="usage">
+        </div>
+											</div>
+											<div class="form-row">
+												<div class="form-group col-12">
+													<label for="usageSourceInput" class="col-form-label">Näitelause või tekstilõigu allikas</label>
+													<input id="usageSourceInput" type="text" class="form-control" name="usageSource">
+        </div>
+												</div>
+												<div class="form-row">
+													<div class="form-group col-12">
+														<label for="definitionInput2" class="col-form-label">Definitsioon</label>
+														<input id="definitionInput2" type="text" class="form-control" name="definition">
+        </div>
+													</div>
+													<div class="form-row">
+														<div class="form-group col-12">
+															<label for="definitionSourceInput" class="col-form-label">Definitsiooni allikas</label>
+															<input id="definitionSourceInput" type="text" class="form-control" name="definitionSource">
+        </div>
+														</div>
+														<div class="form-row">
+															<div class="form-group col-12">
+																<label for="otherInfoInput2" class="col-form-label">Muu info</label>
+																<input id="otherInfoInput2" type="text" class="form-control" name="otherInfo">
+        </div>
+															</div>
+															<div class="form-row">
+																<div class="form-group col-12 col-md-6">
+																	<label for="nameInput2" class="col-form-label">Ees- ja perekonnanimi</label>
+																	<span>*</span>
+																	<input id="nameInput2" type="text" class="form-control" name="senderName" required>
+																	<div class="invalid-feedback">Väli on kohustuslik!
+																	</div>
+																</div>
+																<div class="form-group col-12 col-md-6">
+																	<label for="emailInput2" class="col-form-label">E-post</label>
+																	<span>*</span>
+																	<input id="emailInput2" type="email" class="form-control form-email" name="senderEmail" required>
+																	<div class="invalid-feedback">Väli on kohustuslik!
+																	</div>
+																</div>
+															</div>
+															<div class="form-row">
+																<div class="form-group col-12">
+																	<label for="companyInput2" class="col-form-label">Asutus</label>
+																	<input id="companyInput2" type="text" class="form-control" name="company">
+        </div>
+																</div>
+																<div class="form-row">
+																	<div class="form-group col-12">
+																		<div
+																			class="custom-control custom-checkbox mt-2">
+																			<input type="checkbox" class="custom-control-input modal-check" id="modalCheck2" required>
+																			<label class="custom-control-label" for="modalCheck2">
+              <span>Lisades uue sõna või kommentaari nõustud</span>
+              <a role="link" href="/regulations" data-item-name="regulations">kasutus- ja privaatsustingimustega</a>
+              <span>&nbsp;&ast;</span>
+            </label>
+																			<div class="invalid-feedback">Väli on
+																				kohustuslik!</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="form-group">
+																	<div class="col-12 p-0 mt-2">
+																		<div class="text-right">
+																			<button type="button" class="btn btn-outline-success mr-3" data-dismiss="modal">Tühistan</button>
+																			<button type="button" class="btn btn-success" name="feedbackSendBtn" disabled>Saadan</button>
+																		</div>
+																	</div>
+																</div>
+						</form>
+
+					</div>
+				</div>
+				<div id="responseDiv" class="modal-body d-none">
+					<div class="form-row">
+						<div class="form-group col-12">
+							<div id="feedbackFailMsg" class="alert alert-danger d-none">Tagasiside saatmine ebaõnnestus,
+								proovige hiljem uuesti</div>
+							<div id="feedbackSuccessMsg" class="alert alert-success d-none">Aitäh, oleme tagasiside
+								kätte saanud. Tegeleme sellega esimesel võimalusel</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-12 p-0 mt-2">
+							<div class="text-right">
+								<button type="button" class="mr-3 btn btn-outline-success" data-dismiss="modal">Sulge</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="container-fluid homonym-page mt-3 mb-5">
+		<div class="search-results-header px-0">
+			<div class="d-flex flex-row flex-wrap align-items-center pb-3">
+
+
+
+				<div class="d-flex align-items-center">
+
+					<div class="mr-auto mr-md-2 d-flex align-items-center flex-wrap">
+						<label class="mr-2 my-0 p-0">Keel</label>
+						<div class="dropdown">
+							<button class="btn btn-link dropdown-toggle p-0" type="button" id="destinLangMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span id="selected-langs">Kõik keeled</span>
+        </button>
+							<div class="dropdown-menu px-3" aria-labelledby="destinLangMenuButton">
+
+								<a href="#" id="destin-lang-dlall"
+									class="dropdown-item px-2 py-1 dropdown-item-multiselect active"
+									data-filter-code="dlall">Kõik keeled</a>
+
+								<div class="dropdown-divider"></div>
+								<div class="text-muted font-italic pl-1">vali üks või mitu</div>
+
+
+								<a href="#" id="destin-lang-est"
+									class="dropdown-item px-2 py-1 dropdown-item-multiselect"
+									data-filter-code="est">eesti</a>
+
+
+								<a href="#" id="destin-lang-rus"
+									class="dropdown-item px-2 py-1 dropdown-item-multiselect"
+									data-filter-code="rus">vene</a>
+
+
+								<a href="#" id="destin-lang-eng"
+									class="dropdown-item px-2 py-1 dropdown-item-multiselect"
+									data-filter-code="eng">inglise</a>
+
+
+								<a href="#" id="destin-lang-fra"
+									class="dropdown-item px-2 py-1 dropdown-item-multiselect"
+									data-filter-code="fra">prantsuse</a>
+
+
+								<a href="#" id="destin-lang-other"
+									class="dropdown-item px-2 py-1 dropdown-item-multiselect"
+									data-filter-code="other">Muud keeled</a>
+
+
+							</div>
+						</div>
+					</div>
+
+					<div class="mr-auto mr-md-2 pl-2 d-flex align-items-center flex-wrap">
+						<label class="mr-2 my-0 p-0">Sõnakogud</label>
+						<div class="dropdown">
+							<button class="btn btn-link dropdown-toggle p-0" type="button" id="datasetMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span id="selected-datasets">Kõik sõnakogud</span>
+              </button>
+							<div class="dropdown-menu py-0" aria-labelledby="datasetMenuButton">
+								<div class="dropdown-menu-scroll px-2 py-1">
+
+									<a href="#" id="dataset-dsall" data-filter-code="dsall"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1 active">Kõik
+										sõnakogud</a>
+
+									<div class="dropdown-divider"></div>
+									<div class="text-muted font-italic pl-1">vali üks või mitu</div>
+
+
+									<a href="#" id="dataset-eki" data-filter-code="eki"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">EKI
+										ühendsõnastik 2021</a>
+
+
+									<a href="#" id="dataset-ait" data-filter-code="ait"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Aianduse
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-avt" data-filter-code="avt"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Akadeemilise
+										väljendusoskuse terminibaas</a>
+
+
+									<a href="#" id="dataset-aso" data-filter-code="aso"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Andmeanalüüsi
+										ja statistika oskussõnastik</a>
+
+
+									<a href="#" id="dataset-arh" data-filter-code="arh"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Arheoloogia
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-aos" data-filter-code="aos"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Arhitektuuri
+										oskussõnastik</a>
+
+
+									<a href="#" id="dataset-bks" data-filter-code="bks"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Biokeemiasõnastik</a>
+
+
+									<a href="#" id="dataset-ett" data-filter-code="ett"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Eesti
+										E-tervise SA terminibaas</a>
+
+
+									<a href="#" id="dataset-õtb" data-filter-code="õtb"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Eesti-vene-eesti
+										õigusterminoloogiabaas</a>
+
+
+									<a href="#" id="dataset-spaa" data-filter-code="spaa"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Eesti-vene-inglise
+										spaaterminid</a>
+
+
+									<a href="#" id="dataset-ent" data-filter-code="ent"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Entomoloogia
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-eõt" data-filter-code="eõt"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">E-õppe
+										terminid / E-learning terms</a>
+
+
+									<a href="#" id="dataset-fkm" data-filter-code="fkm"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Filmikunsti
+										terminibaas Filmterm</a>
+
+
+									<a href="#" id="dataset-fil" data-filter-code="fil"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Filosoofia
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-usk" data-filter-code="usk"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Folkloorsete
+										uskumusolendite sõnastik</a>
+
+
+									<a href="#" id="dataset-fon" data-filter-code="fon"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Foneetika
+										sõnastik</a>
+
+
+									<a href="#" id="dataset-gen" data-filter-code="gen"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Geneetika
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-get" data-filter-code="get"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Geoloogia
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-gmt" data-filter-code="gmt"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Geomorfoloogia
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-GER" data-filter-code="GER"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Geriaatria
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-den" data-filter-code="den"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Hambatehnika
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-ida" data-filter-code="ida"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Ida mõtteloo
+										leksikon</a>
+
+
+									<a href="#" id="dataset-iht" data-filter-code="iht"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Ihtüoloogia
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-imm" data-filter-code="imm"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Immunoloogia
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-kem" data-filter-code="kem"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Keemiaterminite
+										baas</a>
+
+
+									<a href="#" id="dataset-kkt" data-filter-code="kkt"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Kognitiivse
+										keeleteaduse terminibaas</a>
+
+
+									<a href="#" id="dataset-kok" data-filter-code="kok"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Kokanduse
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-kto" data-filter-code="kto"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Käsitööteaduse
+										oskussõnad</a>
+
+
+									<a href="#" id="dataset-LoB" data-filter-code="LoB"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Köite ja
+										konserveerimise terminibaas</a>
+
+
+									<a href="#" id="dataset-kfs" data-filter-code="kfs"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Küberfüüsikalise
+										süsteemitehnika terminibaas</a>
+
+
+									<a href="#" id="dataset-lim" data-filter-code="lim"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Limnoloogia
+										sõnastik</a>
+
+
+									<a href="#" id="dataset-lkt" data-filter-code="lkt"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Loomakasvatuse
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-lon" data-filter-code="lon"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Loomanimede
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-pre" data-filter-code="pre"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Loomaparasiitide
+										nimistu</a>
+
+
+									<a href="#" id="dataset-lko" data-filter-code="lko"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Loomi
+										kaasavate organisatsioonide terminibaas</a>
+
+
+									<a href="#" id="dataset-mtr" data-filter-code="mtr"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Materjalitehnika
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-mef" data-filter-code="mef"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Meditsiinifüüsika
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-mes" data-filter-code="mes"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Mesindusleksikon</a>
+
+
+									<a href="#" id="dataset-met" data-filter-code="met"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Metalliaabits</a>
+
+
+									<a href="#" id="dataset-mtkl" data-filter-code="mtkl"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Meteoroloogia
+										ja klimatoloogia terminibaas</a>
+
+
+									<a href="#" id="dataset-mil" data-filter-code="mil"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Militerm |
+										sõjanduse, julgeoleku- ja kaitsepoliitika terminibaas </a>
+
+
+									<a href="#" id="dataset-mon" data-filter-code="mon"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Montessori
+										pedagoogika terminisõnastik</a>
+
+
+									<a href="#" id="dataset-mut" data-filter-code="mut"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Muuseumitöö
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-mte" data-filter-code="mte"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Muusikateraapia
+										seletav sõnastik</a>
+
+
+									<a href="#" id="dataset-nht" data-filter-code="nht"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Nahkhiirte
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-nems" data-filter-code="nems"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Norra-eesti
+										meditsiinisõnastik</a>
+
+
+									<a href="#" id="dataset-prs" data-filter-code="prs"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Parasitoloogia
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-pot" data-filter-code="pot"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Patsiendiohutuse
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-pol" data-filter-code="pol"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Poliitika ja
+										valitsemise sõnastik</a>
+
+
+									<a href="#" id="dataset-pur" data-filter-code="pur"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Purjetamise
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-plt" data-filter-code="plt"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Põllumajandusloomade
+										tõugude terminibaas</a>
+
+
+									<a href="#" id="dataset-rmtk" data-filter-code="rmtk"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Raamatukogusõnastik</a>
+
+
+									<a href="#" id="dataset-rkb" data-filter-code="rkb"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Rakubioloogia
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-rob" data-filter-code="rob"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Robootika
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-plan" data-filter-code="plan"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Ruumilise
+										keskkonna planeerimise terminibaas</a>
+
+
+									<a href="#" id="dataset-skt" data-filter-code="skt"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Skeemiteraapia
+										terminisõnastik</a>
+
+
+									<a href="#" id="dataset-tet" data-filter-code="tet"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Teatriterminite
+										baas</a>
+
+
+									<a href="#" id="dataset-tee" data-filter-code="tee"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Teenuste
+										valdkonna terminibaas</a>
+
+
+									<a href="#" id="dataset-terv" data-filter-code="terv"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Tervishoiu
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-to" data-filter-code="to"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Toiduohutuse,
+										loomatervise ja loomade heaolu terminibaas</a>
+
+
+									<a href="#" id="dataset-tts" data-filter-code="tts"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Tootmistehnika
+										ja -süsteemide terminibaas</a>
+
+
+									<a href="#" id="dataset-ust" data-filter-code="ust"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Usundiloo
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-vlk" data-filter-code="vlk"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Veterinaarmeditsiini
+										ja loomakasvatuse terminibaas</a>
+
+
+									<a href="#" id="dataset-p3m" data-filter-code="p3m"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Projektijuhtimise
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-sarh" data-filter-code="sarh"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Sisearhitektuuri
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-TH" data-filter-code="TH"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Teehoolde
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-mea" data-filter-code="mea"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Metroloogia
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-sem" data-filter-code="sem"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Semiootika
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-tot" data-filter-code="tot"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Eesti-vene
+										töötervishoiu ja -ohutuse terminibaas</a>
+
+
+									<a href="#" id="dataset-kth" data-filter-code="kth"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Kosmosetehnoloogia</a>
+
+
+									<a href="#" id="dataset-sup" data-filter-code="sup"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Supervisiooni
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-nuk" data-filter-code="nuk"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Tuumaenergia
+										ja kiirguskaitse terminibaas</a>
+
+
+									<a href="#" id="dataset-vkm" data-filter-code="vkm"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Eesti
+										viipekeele meditsiiniterminid</a>
+
+
+									<a href="#" id="dataset-sisek" data-filter-code="sisek"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Sisekaitse
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-org" data-filter-code="org"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Organisatsioonikäitumise
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-vrk" data-filter-code="vrk"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Terminivõrgustik</a>
+
+
+									<a href="#" id="dataset-oos" data-filter-code="oos"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Onomastika
+										oskussõnastik</a>
+
+
+									<a href="#" id="dataset-est_test" data-filter-code="est_test"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">EKI
+										ühendterminibaas Esterm 2</a>
+
+
+									<a href="#" id="dataset-rtrv" data-filter-code="rtrv"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Rahvatervishoiu
+										sõnastik</a>
+
+
+									<a href="#" id="dataset-valgus" data-filter-code="valgus"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Valgustehnika
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-vke" data-filter-code="vke"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Vene keel
+										Eestis</a>
+
+
+									<a href="#" id="dataset-elteh" data-filter-code="elteh"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Elektrotehnika</a>
+
+
+									<a href="#" id="dataset-bot" data-filter-code="bot"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Botaanika
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-teks" data-filter-code="teks"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Tekstiilmaterjalide
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-vibu" data-filter-code="vibu"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Vibulaskmise
+										terminibaas</a>
+
+
+									<a href="#" id="dataset-ehpr" data-filter-code="ehpr"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Ehitiste
+										projekteerimise terminibaas</a>
+
+
+									<a href="#" id="dataset-TLV" data-filter-code="TLV"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Tallinna
+										linnavalitsuse terminibaas</a>
+
+
+									<a href="#" id="dataset-kool_KV" data-filter-code="kool_KV"
+										class="dropdown-item dropdown-item-multiselect px-2 text-wrap py-1">Koolisõnastikud
+										2005–2010</a>
+
+
+								</div>
+							</div>
+						</div>
+						<div>
+							<a href="/feelinglucky" class="link ml-3 d-none d-md-block">
+								<span>Ehk mul veab</span>
+							</a>
+						</div>
+					</div>
+				</div>
+				<button name="feedback-btn" value="feedback" class="feedback-btn ml-auto btn btn-success py-0 show-with-details" role="button" type="button"
+                data-toggle="modal" data-target="#feedbackModal"
+                data-item-name="feedback">Tagasiside</button>
+			</div>
+		</div>
+		<main id="mainContentArea" role="main" class="content-panel px-3 loading">
+			<div class="loading-indicator">
+				<div class="spinner-border text-primary " role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+
+			<div class="row overflow-hidden homonym-panel">
+				<button type="button" class="homonym-list-toggle d-flex d-md-none" id="homonymListToggleButton">Nupu sisu</button>
+				<ul class="homonym-list list-unstyled w-100">
+					<li class="homonym-list-item">
+						<form class="h-100">
+							<input type="hidden" name="word-id" value="199880" />
+							<input type="hidden" name="word-selected" value="true" />
+							<input type="hidden" name="word-select-url" value="/search/unif/dlall/dsall/maja/1" />
+							<a href="#" role="button" tabindex="0" id="word-details-link-199880" class="homonym-item">
+								<span class="homonym-item-wrap">
+                <span class="homonym-header d-flex align-items-center">
+                  <span class="text-muted mr-1 lang-code lang-code-sm" title="eesti">et</span>
+								<span class="homonym-name-container">
+                    <span class="homonym-name"><span>maja</span></span>
+								</span>
+								<span class="homonym-nr d-none">1</span>
+								</span>
+								<span class="homonym-matches">eramu</span>
+								<span class="homonym-intro d-block">hoone inimestele elamiseks, töötamiseks, nende teenindamiseks vms</span>
+								</span>
+							</a>
+						</form>
+					</li>
+					<li class="homonym-list-item">
+						<form class="h-100">
+							<input type="hidden" name="word-id" value="879826" />
+							<input type="hidden" name="word-selected" value="false" />
+							<input type="hidden" name="word-select-url" value="/search/unif/dlall/dsall/M%C4%81j%C4%81/1" />
+							<a href="#" role="button" tabindex="0" id="word-details-link-879826" class="homonym-item">
+								<span class="homonym-item-wrap">
+                <span class="homonym-header d-flex align-items-center">
+                  <span class="text-muted mr-1 lang-code lang-code-sm" title="eesti">et</span>
+								<span class="homonym-name-container">
+                    <span class="homonym-name"><span>Mājā</span></span>
+								</span>
+								<span class="homonym-nr d-none">1</span>
+								</span>
+								<span class="homonym-matches">Mahāmājā</span>
+								<span class="homonym-intro d-block">budismi p&auml;rimuses &Scaron;ākjamuni ema, kes olevat surnud seitse p&auml;eva p&auml;rast Buddha s&uuml;ndi ja s&uuml;ndinud ise seej&auml;rel Tu&scaron;ita taevas</span>
+								</span>
+							</a>
+						</form>
+					</li>
+				</ul>
+			</div>
+
+			<div class="word-details">
+
+			</div>
+		</main>
+
+	</div>
+
+	<footer role="contentinfo" class="footer mt-auto">
+		<div class="container footer-wrapper">
+			<div class="row">
+				<div class="col-12 col-md-4">
+					<div class="d-flex justify-content-center justify-content-md-start mb-4">
+						<a href="/">
+
+							<img src="/view/images/eki-logo-white.svg" alt="Sõnaveeb Logo" class="logo">
+
+
+              </a>
+					</div>
+				</div>
+				<div class="col-12 col-md-4">
+					<div class="d-flex flex-column text-center text-md-left mb-4">
+						<span class="mb-1">Roosikrantsi 6, 10119 Tallinn</span>
+						<span>Reg-kood: 70004011</span>
+					</div>
+				</div>
+				<div class="col-12 col-md-4">
+					<div class="d-flex flex-column text-center text-md-left mb-4">
+						<span class="mb-1">
+                <i class="fa fa-phone"></i>
+                <span>617 7500</span>
+						</span>
+						<span>
+                <i class="fa fa-envelope"></i>
+                <a href="mailto:eki@eki.ee">eki@eki.ee</a>
+              </span>
+					</div>
+				</div>
+			</div>
+			<div class="row row-muted mt-0">
+				<div class="col-12 col-md-4">
+					<div class="d-flex flex-column d-md-block text-center text-md-left mb-2">
+						<span>Sõnaveeb 2022</span>
+						<span>(Wordweb App-1.22.0)</span>
+					</div>
+				</div>
+				<div class="col-12 col-md-4">
+					<div class="text-center text-md-left mb-2">
+						&copy;&nbsp;
+						<span>Eesti Keele Instituut 2022</span>
+					</div>
+				</div>
+				<div class="col-12 col-md-4">
+					<div class="d-flex align-items-center justify-content-center justify-content-md-start">
+						<a aria-label="Jaga lehte Facebookis"
+							href="http://www.facebook.com/sharer.php?u=https://sonaveeb.ee" target="_blank"
+							title="Share this in Facebook"> Jaga meid sotsiaalmeedias </a>
+						<a class="fb-icon icon"></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<script>
+		var currentPage = "\/search\/unif";
+  	var searchWordFragUrl = "\/searchwordfrag\/unif";
+  	var wordDetailsUrl = "\/worddetails\/unif";
+  	var morphoUrl = "\/morpho\/unif";
+  	var corpUrl = "\/corp\/detail";
+  	var corpTransUrl = "\/corptrans";
+  	var speechRecognitionServiceUrl = "wss:\/\/bark.phon.ioc.ee:8443\/dev\/duplex-speech-api\/ws\/speech";
+  	setActiveMenuItem('search-unif');
+	</script>
+</body>
+
+</html>
