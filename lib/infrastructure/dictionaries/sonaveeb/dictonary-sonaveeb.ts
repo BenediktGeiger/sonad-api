@@ -1,104 +1,99 @@
-/* eslint-disable no-underscore-dangle */
 import Dictionary from '@lib/domain/dictionary';
 import { Response } from '@lib/domain/dictionary';
-import { caseQuestions, CaseNames, caseKeys } from '@lib/domain/constants';
-import { DictionaryEntry } from '@lib/domain/dictionary-entry';
+import { DictionaryEntry, Meaning, partOfSpeechesTag } from '@lib/domain/dictionary-entry';
 import LoggerInterface from '@lib/domain/logger/logger-interface';
 import { right, left } from '@lib/common/either';
-import { UnexpectedDomainError, WordInvalidError } from '@lib/domain/errors/index';
+import { WordInvalidError } from '@lib/domain/errors/index';
+import puppeteer from 'puppeteer';
+
+const evaluateMeaning = (element: Element) => {
+	const tagElement = element.querySelector('[class*="definition-row"] [class*="tag"]');
+
+	const partofSpeech = tagElement?.textContent ?? '';
+
+	const definitionElement = element.querySelector('[class*="definition-row"] [class*="definition-value"]');
+
+	const definition = definitionElement?.textContent ?? '';
+
+	const synonymsElements = element.querySelectorAll('[class*="synonyms"] [class="synonym"]');
+
+	const synonyms = [...synonymsElements].map((element: Element) => element?.textContent?.trim() ?? '');
+
+	const exampleElements = element.querySelectorAll('[class*="example-text-value"] ');
+
+	const examples = [...exampleElements].map((element: Element) => element?.textContent?.trim() ?? '');
+
+	const meaning: Meaning = {
+		definition,
+		partofSpeech,
+		synonyms,
+		examples,
+	};
+
+	return meaning;
+};
+
+const evaluateWordFormTable = (table: Element) => {
+	const tableCellElements = table.querySelectorAll('td');
+
+	const tableCellValues = [...tableCellElements]
+		.map((tableCell: Element) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
+		.filter((value) => value);
+
+	return tableCellValues;
+};
+
+const evaluatePartOfSpeechesTags = (element: Element) => {
+	const partofSpeech = element.textContent as partOfSpeechesTag;
+
+	return partofSpeech;
+};
 
 export default class DictonarySonaveeb implements Dictionary {
-	private apiClient;
-	private htmlParser;
 	private logger: LoggerInterface;
 
-	constructor(apiClient: any, htmlParser: any, logger: LoggerInterface) {
-		this.apiClient = apiClient;
-		this.htmlParser = htmlParser;
+	constructor(logger: LoggerInterface) {
 		this.logger = logger;
 	}
 
-	async getWordCases(word: string): Promise<Response> {
+	async getWord(word: string): Promise<Response> {
 		try {
-			const result = await this.apiClient.getWordIdHtml({ word });
-
-			if (result.isFailure) {
-				this.logger.error({
-					message: `word ID HTML not found: ${JSON.stringify(result)}`,
-					method: 'getWordCases',
-				});
-				return result;
-			}
-
-			const wordIdResult = await this.htmlParser.getWordId({ rawHtml: await result.getValue() });
-
-			if (wordIdResult.isFailure) {
-				this.logger.error({
-					message: `Word ID not found during parsing: ${JSON.stringify(wordIdResult)}`,
-					method: 'getWordCases',
-				});
-				return left(WordInvalidError.create(word));
-			}
-
-			const wordDetailsPageResult = await this.apiClient.getWordDetailsHtml({ wordId: wordIdResult.getValue() });
-
-			if (wordDetailsPageResult.isFailure) {
-				this.logger.error({
-					message: `word details HTML not found: ${JSON.stringify(wordDetailsPageResult)}`,
-					method: 'getWordCases',
-				});
-				return wordDetailsPageResult;
-			}
-
-			const paradigmIdResult = await this.htmlParser.getParadimId({
-				rawHtml: await wordDetailsPageResult.getValue(),
+			const browser = await puppeteer.launch({
+				devtools: true,
+				headless: false,
+				args: ['--disable-setuid-sandbox'],
+				ignoreHTTPSErrors: true,
 			});
 
-			if (paradigmIdResult.isFailure) {
-				this.logger.error({
-					message: `paradigm ID not found during parsing: ${JSON.stringify(paradigmIdResult)}`,
-					method: 'getWordCases',
-				});
-				return paradigmIdResult;
+			const page = await browser.newPage();
+
+			await page.goto(`https://sonaveeb.ee/search/unif/est/eki/${word}/1`, { waitUntil: 'networkidle2' });
+
+			const partOfSpeeches = await page.$$("[class*='tag my-1']");
+
+			const partOfSpeechesTags = await Promise.all(
+				partOfSpeeches.map((partOfSpeech) => page.evaluate(evaluatePartOfSpeechesTags, partOfSpeech))
+			);
+
+			const meaningType = "[id^='lexeme-section-']";
+			const meaningSections = await page.$$(meaningType);
+
+			const meanings = await Promise.all(
+				meaningSections.map((meaning) => page.evaluate(evaluateMeaning, meaning))
+			);
+
+			const wordFormsTable = await page.$("[class*='morphology-paradigm'] table");
+
+			let wordForms: Array<string> = [];
+			if (wordFormsTable) {
+				wordForms = await page.evaluate(evaluateWordFormTable, wordFormsTable);
 			}
 
-			const tabelPageResult = await this.apiClient.getTableHtml({ paradigmId: paradigmIdResult.getValue() });
-
-			if (tabelPageResult.isFailure) {
-				this.logger.error({
-					message: `word table HTML not found: ${JSON.stringify(tabelPageResult)}`,
-					method: 'getWordCases',
-				});
-				return tabelPageResult;
-			}
-
-			const sonaVeebCases = await this.htmlParser.parseWordCases({ rawHtml: tabelPageResult.getValue() });
-
-			const dictionaryEntry = new DictionaryEntry(word);
-
-			// Continue here
-			// https://khalilstemmler.com/articles/enterprise-typescript-nodejs/functional-error-handling/
-
-			// define Error Responses AND success Responses
-
-			sonaVeebCases.map((sonaCase: { caseName: string; singular: string; plural: string }) => {
-				const caseData = {
-					name: CaseNames[sonaCase.caseName as caseKeys],
-					question: caseQuestions[sonaCase.caseName as caseKeys],
-					singular: sonaCase.singular,
-					plural: sonaCase.plural,
-				};
-				dictionaryEntry.addCase(caseData);
-			});
-
-			this.logger.info({
-				message: `case parsing successfull for ${word}`,
-				method: 'getWordCases',
-			});
-
+			const dictionaryEntry = new DictionaryEntry(word, partOfSpeechesTags, wordForms, meanings);
+			await browser.close();
 			return right(dictionaryEntry);
 		} catch (err) {
-			return left(UnexpectedDomainError.create(err));
+			return left(WordInvalidError.create(word));
 		}
 	}
 }

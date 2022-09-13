@@ -1,22 +1,23 @@
 /* eslint-disable no-underscore-dangle */
 import Dictionary from '@lib/domain/dictionary';
 import { Response } from '@lib/domain/dictionary';
-import { caseQuestions, CaseNames } from '@lib/domain/constants';
-import { DictionaryEntry } from '@lib/domain/dictionary-entry';
+import { DictionaryEntry, Meaning, partOfSpeechesTag } from '@lib/domain/dictionary-entry';
 import { right } from '@lib/common/either';
 
 export default class DictionaryInMemory implements Dictionary {
-	async getWordCases(word: string): Promise<Response> {
-		const dictionaryEntry = new DictionaryEntry(word);
+	async getWord(word: string): Promise<Response> {
+		const partOfSpeechesTags: Array<partOfSpeechesTag> = ['nimisõna'];
+		const wordForms = ['wordform1', 'wordForm2'];
+		const meanings: Array<Meaning> = [
+			{
+				definition: 'sldjfh',
+				partofSpeech: 'slkdfj',
+				synonyms: ['sldjfh'],
+				examples: ['asdfjh'],
+			},
+		];
 
-		const caseData1 = {
-			name: CaseNames.NIMETAV,
-			question: caseQuestions.NIMETAV,
-			singular: 'maja',
-			plural: 'majad',
-		};
-
-		dictionaryEntry.addCase(caseData1);
+		const dictionaryEntry = new DictionaryEntry(word, partOfSpeechesTags, wordForms, meanings);
 
 		return right(dictionaryEntry);
 	}

@@ -12,7 +12,7 @@ const Endpoints = Object.freeze({
 export default (server: express.Express, services: Services) => {
 	const dictionaryController = new DictionaryController(new DictionaryService(services));
 
-	router.get(Endpoints.WORD, dictionaryController.getGrammaticalCasesAction());
+	router.get(Endpoints.WORD, dictionaryController.getWord());
 
 	server.use('/v1', router);
 };

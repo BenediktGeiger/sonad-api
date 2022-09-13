@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import DictionaryService from '@lib/application/dictionary-service.js';
+
+import puppeteer from 'puppeteer';
 export default class DictionaryController {
 	private dictionaryService: DictionaryService;
 
@@ -7,10 +9,10 @@ export default class DictionaryController {
 		this.dictionaryService = dictionaryService;
 	}
 
-	getGrammaticalCasesAction = () => async (req: Request, res: Response) => {
+	getWord = () => async (req: Request, res: Response) => {
 		console.time('time');
 		const word = req?.params?.word;
-		const wordResult = await this.dictionaryService.getGrammaticalCases(word);
+		const wordResult = await this.dictionaryService.getWord(word);
 		console.timeEnd('time');
 		return res.json(wordResult);
 	};

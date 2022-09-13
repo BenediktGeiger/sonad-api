@@ -20,7 +20,7 @@ const createServer = async (services: Services) => {
 	router(server, services);
 	server.use(errorHandler);
 
-	const port = process.env.PORT ?? 8080;
+	const port = process.env.PORT ?? 8083;
 	server.listen(port, () => {
 		services.logger.info({
 			message: `Server running on port ${port}!`,
