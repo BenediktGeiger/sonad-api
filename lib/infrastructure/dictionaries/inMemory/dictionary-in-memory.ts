@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import Dictionary from '@lib/domain/dictionary';
 import { Response } from '@lib/domain/dictionary';
 import { DictionaryEntry, Meaning, partOfSpeechesTag } from '@lib/domain/dictionary-entry';
@@ -17,7 +16,7 @@ export default class DictionaryInMemory implements Dictionary {
 			},
 		];
 
-		const dictionaryEntry = new DictionaryEntry(word, partOfSpeechesTags, wordForms, meanings);
+		const dictionaryEntry = new DictionaryEntry(word, partOfSpeechesTags, meanings, wordForms);
 
 		return right(dictionaryEntry);
 	}

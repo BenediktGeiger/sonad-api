@@ -23,34 +23,24 @@ export interface Meaning {
 	examples: Array<string>;
 }
 
-interface IDictionaryEntry {
+export interface IDictionaryEntry {
 	word: string;
-	meanings: Array<Meaning>;
-	cases: Array<CaseInfo>; // rename to wordForms
+	wordForms: object;
+	partOfSpeech: string[];
+	meanings: Meaning[];
 }
 
 export class DictionaryEntry implements IDictionaryEntry {
 	word: string;
 	partOfSpeech: Array<partOfSpeechesTag>;
-	wordForms: Array<string>; // make discrimanted union out of it
 	meanings: Array<Meaning>;
-	cases: Array<CaseInfo>;
+	wordForms: object; // make discrimanted union out of it
 
-	constructor(
-		word: string,
-		partOfSpeech: Array<partOfSpeechesTag>,
-		wordForms: Array<string>,
-		meanings: Array<Meaning>
-	) {
+	constructor(word: string, partOfSpeech: Array<partOfSpeechesTag>, meanings: Array<Meaning>, wordForms: object) {
 		this.word = word;
 		this.partOfSpeech = partOfSpeech;
 		this.wordForms = wordForms;
 		this.meanings = meanings;
-		this.cases = [];
-	}
-
-	addCase(caseData: CaseInfo) {
-		this.cases.push(caseData);
 	}
 }
 

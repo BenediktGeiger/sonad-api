@@ -5,8 +5,10 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "npx tsc",
+    "dev:build": "$(npm bin)/tsc -w",
+    "dev:run": "nodemon -e ts,tsc --exec \"node --inspect=5858 -r ts-node/register ./lib/index.ts\"",
+    "dev": "$(npm bin)/concurrently npm:dev:*",
     "start": "node dist/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
     "debug": "concurrently \"npx tsc --watch\" \"nodemon --inspect=1900 -q dist/index.js\"",
     "lint": "eslint ./lib --ext .ts",
     "prettier-format": "prettier --config .prettierrc 'lib/**/*.ts' --write"
@@ -59,6 +61,7 @@
     "jsdoc": "^3.6.10",
     "nodemon": "^2.0.15",
     "prettier": "^2.6.1",
+    "ts-node": "^10.9.1",
     "typescript-eslint": "0.0.1-alpha.0",
     "winston": "^3.8.1"
   }
