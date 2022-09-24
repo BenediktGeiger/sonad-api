@@ -6,5 +6,5 @@ import { Either } from '@lib/common/either';
 export type Response = Either<UnexpectedDomainError | WordInvalidError, DictionaryEntry>;
 
 export default interface Dictionary {
-	getWordCases(word: string): Promise<Response>;
+	getWord(word: string): Promise<Response>;
 }

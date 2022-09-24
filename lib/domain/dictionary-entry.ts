@@ -7,22 +7,40 @@ interface CaseInfo {
 	plural: string;
 }
 
-interface IDictionaryEntry {
+export type partOfSpeechesTag =
+	| 'nimisõna'
+	| 'tegusõna'
+	| 'sidesõna'
+	| 'määrsõna'
+	| 'eessõna'
+	| 'tagasõna'
+	| 'täiendsõna';
+
+export interface Meaning {
+	definition: string;
+	partofSpeech: string;
+	synonyms: Array<string>;
+	examples: Array<string>;
+}
+
+export interface IDictionaryEntry {
 	word: string;
-	cases: Array<CaseInfo>;
+	wordForms: object;
+	partOfSpeech: string[];
+	meanings: Meaning[];
 }
 
 export class DictionaryEntry implements IDictionaryEntry {
 	word: string;
-	cases: Array<CaseInfo>;
+	partOfSpeech: Array<partOfSpeechesTag>;
+	meanings: Array<Meaning>;
+	wordForms: object; // make discrimanted union out of it
 
-	constructor(word: string) {
+	constructor(word: string, partOfSpeech: Array<partOfSpeechesTag>, meanings: Array<Meaning>, wordForms: object) {
 		this.word = word;
-		this.cases = [];
-	}
-
-	addCase(caseData: CaseInfo) {
-		this.cases.push(caseData);
+		this.partOfSpeech = partOfSpeech;
+		this.wordForms = wordForms;
+		this.meanings = meanings;
 	}
 }
 

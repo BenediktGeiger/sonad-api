@@ -1,104 +1,52 @@
-/* eslint-disable no-underscore-dangle */
+import puppeteer, { Page } from 'puppeteer';
 import Dictionary from '@lib/domain/dictionary';
 import { Response } from '@lib/domain/dictionary';
-import { caseQuestions, CaseNames, caseKeys } from '@lib/domain/constants';
 import { DictionaryEntry } from '@lib/domain/dictionary-entry';
 import LoggerInterface from '@lib/domain/logger/logger-interface';
 import { right, left } from '@lib/common/either';
-import { UnexpectedDomainError, WordInvalidError } from '@lib/domain/errors/index';
+import { WordInvalidError } from '@lib/domain/errors/index';
+import { IWordFormsFinder } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
+import { parseMeanings } from '@lib/infrastructure/dictionaries/sonaveeb/meanings';
+import { parsePartOfSpeech } from '@lib/infrastructure/dictionaries/sonaveeb/part-of-speech';
 
 export default class DictonarySonaveeb implements Dictionary {
-	private apiClient;
-	private htmlParser;
 	private logger: LoggerInterface;
+	private wordFormsFinder: IWordFormsFinder;
 
-	constructor(apiClient: any, htmlParser: any, logger: LoggerInterface) {
-		this.apiClient = apiClient;
-		this.htmlParser = htmlParser;
+	constructor(logger: LoggerInterface, wordFormsFinder: IWordFormsFinder) {
 		this.logger = logger;
+		this.wordFormsFinder = wordFormsFinder;
 	}
 
-	async getWordCases(word: string): Promise<Response> {
+	async getWord(word: string): Promise<Response> {
 		try {
-			const result = await this.apiClient.getWordIdHtml({ word });
+			const browser = await puppeteer.launch({
+				devtools: true,
+				headless: true,
+				args: ['--disable-setuid-sandbox'],
+				ignoreHTTPSErrors: true,
+			});
 
-			if (result.isFailure) {
-				this.logger.error({
-					message: `word ID HTML not found: ${JSON.stringify(result)}`,
-					method: 'getWordCases',
-				});
-				return result;
-			}
+			const page: Page = await browser.newPage();
 
-			const wordIdResult = await this.htmlParser.getWordId({ rawHtml: await result.getValue() });
+			await page.goto(`https://sonaveeb.ee/search/unif/est/eki/${word}/1`, { waitUntil: 'networkidle2' });
 
-			if (wordIdResult.isFailure) {
-				this.logger.error({
-					message: `Word ID not found during parsing: ${JSON.stringify(wordIdResult)}`,
-					method: 'getWordCases',
-				});
+			const partOfSpeechesTags = await parsePartOfSpeech(page);
+
+			if (!partOfSpeechesTags.length) {
 				return left(WordInvalidError.create(word));
 			}
 
-			const wordDetailsPageResult = await this.apiClient.getWordDetailsHtml({ wordId: wordIdResult.getValue() });
+			const meanings = await parseMeanings(page);
 
-			if (wordDetailsPageResult.isFailure) {
-				this.logger.error({
-					message: `word details HTML not found: ${JSON.stringify(wordDetailsPageResult)}`,
-					method: 'getWordCases',
-				});
-				return wordDetailsPageResult;
-			}
+			const wordForms = await this.wordFormsFinder.findWordForms(partOfSpeechesTags[0], page);
 
-			const paradigmIdResult = await this.htmlParser.getParadimId({
-				rawHtml: await wordDetailsPageResult.getValue(),
-			});
+			const dictionaryEntry = new DictionaryEntry(word, partOfSpeechesTags, meanings, wordForms);
 
-			if (paradigmIdResult.isFailure) {
-				this.logger.error({
-					message: `paradigm ID not found during parsing: ${JSON.stringify(paradigmIdResult)}`,
-					method: 'getWordCases',
-				});
-				return paradigmIdResult;
-			}
-
-			const tabelPageResult = await this.apiClient.getTableHtml({ paradigmId: paradigmIdResult.getValue() });
-
-			if (tabelPageResult.isFailure) {
-				this.logger.error({
-					message: `word table HTML not found: ${JSON.stringify(tabelPageResult)}`,
-					method: 'getWordCases',
-				});
-				return tabelPageResult;
-			}
-
-			const sonaVeebCases = await this.htmlParser.parseWordCases({ rawHtml: tabelPageResult.getValue() });
-
-			const dictionaryEntry = new DictionaryEntry(word);
-
-			// Continue here
-			// https://khalilstemmler.com/articles/enterprise-typescript-nodejs/functional-error-handling/
-
-			// define Error Responses AND success Responses
-
-			sonaVeebCases.map((sonaCase: { caseName: string; singular: string; plural: string }) => {
-				const caseData = {
-					name: CaseNames[sonaCase.caseName as caseKeys],
-					question: caseQuestions[sonaCase.caseName as caseKeys],
-					singular: sonaCase.singular,
-					plural: sonaCase.plural,
-				};
-				dictionaryEntry.addCase(caseData);
-			});
-
-			this.logger.info({
-				message: `case parsing successfull for ${word}`,
-				method: 'getWordCases',
-			});
-
+			await browser.close();
 			return right(dictionaryEntry);
 		} catch (err) {
-			return left(UnexpectedDomainError.create(err));
+			return left(WordInvalidError.create(word));
 		}
 	}
 }

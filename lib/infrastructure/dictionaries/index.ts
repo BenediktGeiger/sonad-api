@@ -2,13 +2,37 @@ import DictionaryInMemory from '@lib/infrastructure/dictionaries/inMemory/dictio
 import Dictionary from '@lib/domain/dictionary';
 import Logger from '@lib/domain/logger/logger-interface';
 import DictionarySonaVeeb from '@lib/infrastructure/dictionaries/sonaveeb/dictonary-sonaveeb';
-import SonaVeebApiClient from '@lib/infrastructure/dictionaries/sonaveeb/api-client/index';
-import SonaVeebHtmlParser from '@lib/infrastructure/dictionaries/sonaveeb/parser/index';
+import WordFormsFinder from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
+import {
+	NounStrategy,
+	VerbStrategy,
+	AdjectiveStrategy,
+	AdverbStrategy,
+	PronounStrategy,
+	NumberWordStrategy,
+	ExclamationStrategy,
+	ConjunctionStrategy,
+	PrePostPositionStrategy,
+	DefaultStrategy,
+} from '@lib/infrastructure/dictionaries/sonaveeb/word-forms/strategies';
 
 export default {
 	getDictionary(logger: Logger): Dictionary {
 		if (process.env.DICTIONARY === 'sonaveeb') {
-			return new DictionarySonaVeeb(new SonaVeebApiClient(), new SonaVeebHtmlParser(), logger);
+			const wordFormFinder = new WordFormsFinder([
+				new NounStrategy(),
+				new VerbStrategy(),
+				new AdjectiveStrategy(),
+				new AdverbStrategy(),
+				new PronounStrategy(),
+				new NumberWordStrategy(),
+				new ExclamationStrategy(),
+				new ConjunctionStrategy(),
+				new PrePostPositionStrategy(),
+				new DefaultStrategy(),
+			]);
+
+			return new DictionarySonaVeeb(logger, wordFormFinder);
 		}
 
 		return new DictionaryInMemory();

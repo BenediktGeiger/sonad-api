@@ -7,15 +7,15 @@ import { Result } from '@lib/common/result';
 import DictionaryEntry from '@lib/domain/dictionary-entry';
 import Logger from '@lib/domain/logger/logger-interface';
 
-type UseCaseResponse = Either<WordInvalidError | UnexpectedDomainError, GetWordCasesResult>;
+type UseCaseResponse = Either<WordInvalidError | UnexpectedDomainError, GetWordResult>;
 
-class GetWordCasesResult extends Result<DictionaryEntry> {
+class GetWordResult extends Result<DictionaryEntry> {
 	public constructor(value: DictionaryEntry) {
 		super(true, null, value);
 	}
 
-	public static create(value: DictionaryEntry): GetWordCasesResult {
-		return new GetWordCasesResult(value);
+	public static create(value: DictionaryEntry): GetWordResult {
+		return new GetWordResult(value);
 	}
 }
 
@@ -37,7 +37,7 @@ export default class DictionaryService {
 		this.logger = logger;
 	}
 
-	async getGrammaticalCases(word: string): Promise<UseCaseResponse> {
+	async getWord(word: string): Promise<UseCaseResponse> {
 		if (!word) {
 			return left(WordInvalidError.create(word));
 		}
@@ -50,10 +50,10 @@ export default class DictionaryService {
 				method: 'getCases',
 			});
 			const entry: DictionaryEntry = JSON.parse(cachedDictionaryEntry);
-			return right(GetWordCasesResult.create(entry));
+			return right(GetWordResult.create(entry));
 		}
 
-		const result: Response = await this.dictionary.getWordCases(word);
+		const result: Response = await this.dictionary.getWord(word);
 
 		if (result.isLeft()) {
 			return left(result.value);
@@ -61,6 +61,6 @@ export default class DictionaryService {
 
 		await this.cacheRepository.set(word, JSON.stringify(result.value));
 
-		return right(GetWordCasesResult.create(result.value));
+		return right(GetWordResult.create(result.value));
 	}
 }
