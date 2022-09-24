@@ -1,4 +1,4 @@
-import puppeteer, { Browser, Page } from 'puppeteer';
+import puppeteer, { Page } from 'puppeteer';
 import Dictionary from '@lib/domain/dictionary';
 import { Response } from '@lib/domain/dictionary';
 import { DictionaryEntry } from '@lib/domain/dictionary-entry';
@@ -32,6 +32,10 @@ export default class DictonarySonaveeb implements Dictionary {
 			await page.goto(`https://sonaveeb.ee/search/unif/est/eki/${word}/1`, { waitUntil: 'networkidle2' });
 
 			const partOfSpeechesTags = await parsePartOfSpeech(page);
+
+			if (!partOfSpeechesTags.length) {
+				return left(WordInvalidError.create(word));
+			}
 
 			const meanings = await parseMeanings(page);
 
