@@ -42,7 +42,7 @@ export default class DictionaryService {
 			return left(WordInvalidError.create(word));
 		}
 
-		const cachedDictionaryEntry = await this.cacheRepository.get(word);
+		const cachedDictionaryEntry = process.env.CACHE ? await this.cacheRepository.get(word) : null;
 
 		if (cachedDictionaryEntry) {
 			this.logger.info({

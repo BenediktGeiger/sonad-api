@@ -10,7 +10,7 @@ const Endpoints = Object.freeze({
 });
 
 export default (server: express.Express, services: Services) => {
-	const dictionaryController = new DictionaryController(new DictionaryService(services));
+	const dictionaryController = new DictionaryController(new DictionaryService(services), services.logger);
 
 	router.get(Endpoints.WORD, dictionaryController.getWord());
 
