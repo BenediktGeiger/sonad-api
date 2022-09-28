@@ -25,6 +25,6 @@ export default class DictionaryController {
 			return next(new CustomError('Word InValid', 404));
 		}
 
-		return res.json(wordResult);
+		return res.json(wordResult.value);
 	};
 }

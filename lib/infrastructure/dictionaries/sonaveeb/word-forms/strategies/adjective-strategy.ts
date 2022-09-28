@@ -1,8 +1,8 @@
 import { ElementHandle, Page } from 'puppeteer';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
-
+import { AdjectiveForm } from '@lib/domain/dictionary-entry';
 export default class AdjectiveStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<object | void> {
+	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<AdjectiveForm | void> {
 		if (partOfSpeech !== 'omadussõna') {
 			return;
 		}
@@ -18,12 +18,12 @@ export default class AdjectiveStrategy implements WordFormStrategy {
 			.filter((value) => value);
 
 		return {
-			ainsuse: {
+			singular: {
 				nimetav: tableCellValues[0],
 				omastav: tableCellValues[2],
 				osastav: tableCellValues[4],
 			},
-			mitmuse: {
+			plural: {
 				nimetav: tableCellValues[1],
 				omastav: tableCellValues[3],
 				osastav: tableCellValues[5],

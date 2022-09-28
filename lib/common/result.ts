@@ -1,8 +1,8 @@
 export class Result<T> {
+	private value: T | undefined;
 	public isSuccess: boolean;
 	public isFailure: boolean;
 	public error: T | null;
-	private value: T | undefined;
 
 	public constructor(isSuccess: boolean, error: T | null, value?: T) {
 		if (isSuccess && error) {
@@ -12,10 +12,10 @@ export class Result<T> {
 			throw new Error(`InvalidOperation: A failing result needs to contain an error message`);
 		}
 
+		this.value = value;
 		this.isSuccess = isSuccess;
 		this.isFailure = !isSuccess;
 		this.error = error;
-		this.value = value;
 
 		Object.freeze(this);
 	}
