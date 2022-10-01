@@ -1,8 +1,9 @@
 import { ElementHandle, Page } from 'puppeteer';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
+import { VerbForm } from '@lib/domain/dictionary-entry';
 
 export default class VerbStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<object | void> {
+	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<VerbForm | void> {
 		if (partOfSpeech !== 'tegusõna') {
 			return;
 		}
@@ -18,14 +19,14 @@ export default class VerbStrategy implements WordFormStrategy {
 			.filter((value) => value);
 
 		return {
-			'ma-tegevusnimi': tableCellValues[0],
-			'da-tegevusnimi': tableCellValues[2],
-			'oleviku-ainsuse-3-pöörde ': tableCellValues[4],
-			'lihtmineviku-ainsuse-3-pöörde': tableCellValues[1],
-			'nud-kesksõna': tableCellValues[3],
-			'tud-kesksõna': tableCellValues[6],
-			'oleviku-umbisikuline-tegumood': tableCellValues[7],
-			'käskiva-kõneviisi-oleviku-ainsuse-2-pöörde': tableCellValues[5],
+			'ma-form': tableCellValues[0],
+			'da-form': tableCellValues[2],
+			'3-person-present-singular ': tableCellValues[4],
+			'3-person-past-singular': tableCellValues[1],
+			'nud-form': tableCellValues[3],
+			'tud-form': tableCellValues[6],
+			'impersonal-form-present': tableCellValues[7],
+			'imperative-2-person-singular': tableCellValues[5],
 		};
 	}
 }

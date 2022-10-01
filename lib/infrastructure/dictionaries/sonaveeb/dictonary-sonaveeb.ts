@@ -6,15 +6,15 @@ import LoggerInterface from '@lib/domain/logger/logger-interface';
 import { right, left } from '@lib/common/either';
 import { asyncStopWatch } from '@lib/common/stop-watch';
 import { WordInvalidError } from '@lib/domain/errors/index';
-import { IWordFormsFinder } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
+import WordFormsFinder from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { parseMeanings } from '@lib/infrastructure/dictionaries/sonaveeb/meanings';
 import { parsePartOfSpeech } from '@lib/infrastructure/dictionaries/sonaveeb/part-of-speech';
 
 export default class DictonarySonaveeb implements Dictionary {
 	private logger: LoggerInterface;
-	private wordFormsFinder: IWordFormsFinder;
+	private wordFormsFinder: WordFormsFinder;
 
-	constructor(logger: LoggerInterface, wordFormsFinder: IWordFormsFinder) {
+	constructor(logger: LoggerInterface, wordFormsFinder: WordFormsFinder) {
 		this.logger = logger;
 		this.wordFormsFinder = wordFormsFinder;
 	}
@@ -58,7 +58,7 @@ export default class DictonarySonaveeb implements Dictionary {
 			const meanings = await asyncStopWatch(parseMeanings, this.logger)(page);
 
 			const wordForms = await asyncStopWatch(
-				this.wordFormsFinder.findWordForms.bind(this.wordFormsFinder) as (...args: any[]) => any,
+				this.wordFormsFinder.findWordForms.bind(this.wordFormsFinder),
 				this.logger
 			)(partOfSpeechesTags[0], page);
 

@@ -1,8 +1,13 @@
 import { ElementHandle, Page } from 'puppeteer';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
+import { PrePostPositionForm } from '@lib/domain/dictionary-entry';
 
 export default class PrePostPositionsStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<object | void> {
+	async getWordForms(
+		page: Page,
+		tableHandle: ElementHandle,
+		partOfSpeech: string
+	): Promise<PrePostPositionForm | void> {
 		if (partOfSpeech === 'eessõna' || partOfSpeech === 'tagasõna') {
 			return page.evaluate(this.evaluatePrePostPositionTable, tableHandle);
 		}

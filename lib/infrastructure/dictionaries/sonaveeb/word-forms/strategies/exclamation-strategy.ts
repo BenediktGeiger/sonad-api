@@ -1,8 +1,9 @@
 import { ElementHandle, Page } from 'puppeteer';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
+import { ExclamationForm } from '@lib/domain/dictionary-entry';
 
 export default class ExclamationStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<object | void> {
+	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<ExclamationForm | void> {
 		if (partOfSpeech !== 'hüüdsõna') {
 			return;
 		}

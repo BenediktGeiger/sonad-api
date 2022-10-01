@@ -22,9 +22,9 @@ export default class DictionaryController {
 		)(word);
 
 		if (wordResult.isLeft()) {
-			return next(new CustomError('Word InValid', 404));
+			return next(new CustomError('Word Not Found', 404));
 		}
 
-		return res.json(wordResult);
+		return res.json(wordResult.value);
 	};
 }

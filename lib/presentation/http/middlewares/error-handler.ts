@@ -17,7 +17,10 @@ const errorHandler = (err: TypeError | CustomError, req: Request, res: Response,
 		return res.status((err as CustomError).status).send(err);
 	}
 
-	return res.status(500).send('Something went wrong');
+	return res.status(500).send({
+		message: 'Server error',
+		status: 500,
+	});
 };
 
 export default errorHandler;
