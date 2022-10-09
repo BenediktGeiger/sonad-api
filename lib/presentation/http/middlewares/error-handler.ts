@@ -3,12 +3,10 @@ import { Request, Response, NextFunction } from 'express';
 export class CustomError {
 	message!: string;
 	status!: number;
-	additionalInfo!: any;
 
-	constructor(message: string, status = 500, additionalInfo: any = {}) {
+	constructor(message: string, status = 500) {
 		this.message = message;
 		this.status = status;
-		this.additionalInfo = additionalInfo;
 	}
 }
 

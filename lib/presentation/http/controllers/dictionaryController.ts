@@ -46,4 +46,38 @@ export default class DictionaryController {
 
 		return res.json(wordResult.payload);
 	};
+
+	getWordForms = () => async (req: Request, res: Response, next: NextFunction) => {
+		const word = req?.params?.word;
+
+		const result = await asyncStopWatch(
+			this.dictionaryService.getWordForms.bind(this.dictionaryService),
+			this.logger
+		)(word);
+
+		if (result.isLeft()) {
+			return next(new CustomError('Something went wrong', 500));
+		}
+
+		await req.cache.set(req.originalUrl, JSON.stringify(result.payload));
+
+		return res.json(result.payload);
+	};
+
+	getMeanings = () => async (req: Request, res: Response, next: NextFunction) => {
+		const word = req?.params?.word;
+
+		const result = await asyncStopWatch(
+			this.dictionaryService.getMeanings.bind(this.dictionaryService),
+			this.logger
+		)(word);
+
+		if (result.isLeft()) {
+			return next(new CustomError('Something went wrong', 500));
+		}
+
+		await req.cache.set(req.originalUrl, JSON.stringify(result.payload));
+
+		return res.json(result.payload);
+	};
 }

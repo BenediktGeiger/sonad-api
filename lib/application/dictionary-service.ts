@@ -4,7 +4,7 @@ import DictionaryCache from '@lib/domain/cache-repository';
 import { DictionaryResponse } from '@lib/domain/dictionary';
 import { InvalidDictionaryResponse, ValidDictionaryResponse } from '@lib/domain/dictionary';
 import Logger from '@lib/domain/logger/logger-interface';
-import { partOfSpeechesTag } from '@lib/domain/dictionary-entry';
+import { partOfSpeechesTag, WordForm, Meaning } from '@lib/domain/dictionary-entry';
 
 import { Either, left, right, Left } from '@lib/common/either';
 
@@ -21,8 +21,18 @@ type PartOfSpeechResult = {
 	value: partOfSpeechesTag[];
 };
 
+type WordFormsResult = {
+	value: WordForm;
+};
+
+type MeaningsResult = {
+	value: WordForm[];
+};
+
 type WordResponse = Either<ApplicationError | InvalidWord, ValidDictionaryResponse | InvalidDictionaryResponse>;
 type PartofSpeechResponse = Either<ApplicationError | InvalidWord, PartOfSpeechResult | InvalidDictionaryResponse>;
+type WordFormsResponse = Either<ApplicationError | InvalidWord, WordFormsResult | InvalidDictionaryResponse>;
+type MeaningsResponse = Either<ApplicationError | InvalidWord, MeaningsResult | InvalidDictionaryResponse>;
 
 export default class DictionaryService {
 	private dictionary: Dictionary;
@@ -71,6 +81,60 @@ export default class DictionaryService {
 		}
 
 		return right({ value: dictionaryEntry.partOfSpeech });
+	}
+
+	async getWordForms(word: string): Promise<WordFormsResponse> {
+		if (!word) {
+			return left(this.handleInValidWordError());
+		}
+
+		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
+
+		if (dictionaryResponse.isLeft()) {
+			return left(this.handleApplicationError());
+		}
+
+		if (!this.isValidDictionaryEntry(dictionaryResponse)) {
+			return right({
+				message: `The word ${word} is not in the dictionary`,
+				value: null,
+			});
+		}
+
+		const dictionaryEntry = dictionaryResponse?.payload?.value;
+
+		if (!dictionaryEntry?.wordForms) {
+			return left(this.handleApplicationError());
+		}
+
+		return right({ value: dictionaryEntry.wordForms });
+	}
+
+	async getMeanings(word: string): Promise<MeaningsResponse> {
+		if (!word) {
+			return left(this.handleInValidWordError());
+		}
+
+		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
+
+		if (dictionaryResponse.isLeft()) {
+			return left(this.handleApplicationError());
+		}
+
+		if (!this.isValidDictionaryEntry(dictionaryResponse)) {
+			return right({
+				message: `The word ${word} is not in the dictionary`,
+				value: null,
+			});
+		}
+
+		const dictionaryEntry = dictionaryResponse?.payload?.value;
+
+		if (!dictionaryEntry?.meanings) {
+			return left(this.handleApplicationError());
+		}
+
+		return right({ value: dictionaryEntry.meanings });
 	}
 
 	private isValidDictionaryEntry(response: any): response is ValidDictionaryResponse {
