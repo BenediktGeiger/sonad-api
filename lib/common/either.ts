@@ -1,10 +1,10 @@
 export type Either<L, A> = Left<L, A> | Right<L, A>;
 
 export class Left<L, A> {
-	readonly value: L;
+	readonly payload: L;
 
-	constructor(value: L) {
-		this.value = value;
+	constructor(payload: L) {
+		this.payload = payload;
 	}
 
 	isLeft(): this is Left<L, A> {
@@ -17,10 +17,10 @@ export class Left<L, A> {
 }
 
 export class Right<L, A> {
-	readonly value: A;
+	readonly payload: A;
 
-	constructor(value: A) {
-		this.value = value;
+	constructor(payload: A) {
+		this.payload = payload;
 	}
 
 	isLeft(): this is Left<L, A> {

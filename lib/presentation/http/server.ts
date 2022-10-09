@@ -7,16 +7,20 @@ import {
 	corsHandler,
 	bindServices,
 	rateLimiter,
+	cacheHandler,
 	errorHandler,
+	metrics,
 } from '@lib/presentation/http/middlewares/index';
 
 const createServer = async (services: Services) => {
 	const server = express();
 
+	server.use(metrics());
 	server.use(corsHandler);
 	server.use(jsonParser);
 	server.use(bindServices(services));
 	server.use(rateLimiter);
+	server.use(cacheHandler);
 	router(server, services);
 	server.use(errorHandler);
 

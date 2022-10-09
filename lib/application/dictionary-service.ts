@@ -1,66 +1,91 @@
 import Dictionary from '@lib/domain/dictionary';
 import DictionaryCache from '@lib/domain/cache-repository';
-import { WordInvalidError, UnexpectedDomainError } from '@lib/domain/errors/index';
-import { Either, right, left } from '@lib/common/either';
-import { Response } from '@lib/domain/dictionary';
-import { Result } from '@lib/common/result';
-import DictionaryEntry from '@lib/domain/dictionary-entry';
+
+import { DictionaryResponse } from '@lib/domain/dictionary';
+import { InvalidDictionaryResponse, ValidDictionaryResponse } from '@lib/domain/dictionary';
 import Logger from '@lib/domain/logger/logger-interface';
+import { partOfSpeechesTag } from '@lib/domain/dictionary-entry';
 
-type UseCaseResponse = Either<WordInvalidError | UnexpectedDomainError, GetWordResult>;
+import { Either, left, right, Left } from '@lib/common/either';
 
-class GetWordResult extends Result<DictionaryEntry> {
-	public constructor(value: DictionaryEntry) {
-		super(true, null, value);
-	}
+type ApplicationError = {
+	message: string;
+	error?: any;
+};
 
-	public static create(value: DictionaryEntry): GetWordResult {
-		return new GetWordResult(value);
-	}
-}
+type InvalidWord = {
+	message: string;
+};
+
+type PartOfSpeechResult = {
+	value: partOfSpeechesTag[];
+};
+
+type WordResponse = Either<ApplicationError | InvalidWord, ValidDictionaryResponse | InvalidDictionaryResponse>;
+type PartofSpeechResponse = Either<ApplicationError | InvalidWord, PartOfSpeechResult | InvalidDictionaryResponse>;
 
 export default class DictionaryService {
 	private dictionary: Dictionary;
-	private cacheRepository: DictionaryCache;
 	private logger: Logger;
-	constructor({
-		dictionary,
-		cacheRepository,
-		logger,
-	}: {
-		dictionary: Dictionary;
-		cacheRepository: DictionaryCache;
-		logger: Logger;
-	}) {
+	constructor({ dictionary, logger }: { dictionary: Dictionary; cacheRepository: DictionaryCache; logger: Logger }) {
 		this.dictionary = dictionary;
-		this.cacheRepository = cacheRepository;
 		this.logger = logger;
 	}
 
-	async getWord(word: string): Promise<UseCaseResponse> {
+	async getWord(word: string): Promise<WordResponse> {
 		if (!word) {
-			return left(WordInvalidError.create(word));
+			return left(this.handleInValidWordError());
 		}
 
-		const cachedDictionaryEntry = process.env.CACHE ? await this.cacheRepository.get(word) : null;
+		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
 
-		if (cachedDictionaryEntry) {
-			this.logger.info({
-				message: `found cases in cache for ${word}`,
-				method: 'getCases',
+		if (dictionaryResponse.isLeft()) {
+			return left(this.handleApplicationError());
+		}
+
+		return right(dictionaryResponse.payload);
+	}
+
+	async getPartOfSpeech(word: string): Promise<PartofSpeechResponse> {
+		if (!word) {
+			return left(this.handleInValidWordError());
+		}
+
+		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
+
+		if (dictionaryResponse.isLeft()) {
+			return left(this.handleApplicationError());
+		}
+
+		if (!this.isValidDictionaryEntry(dictionaryResponse)) {
+			return right({
+				message: `The word ${word} is not in the dictionary`,
+				value: null,
 			});
-			const entry: DictionaryEntry = JSON.parse(cachedDictionaryEntry);
-			return right(GetWordResult.create(entry));
 		}
 
-		const result: Response = await this.dictionary.getWord(word);
+		const dictionaryEntry = dictionaryResponse?.payload?.value;
 
-		if (result.isLeft()) {
-			return left(result.value);
+		if (!dictionaryEntry?.partOfSpeech) {
+			return left(this.handleApplicationError());
 		}
 
-		await this.cacheRepository.set(word, JSON.stringify(result.value));
+		return right({ value: dictionaryEntry.partOfSpeech });
+	}
 
-		return right(GetWordResult.create(result.value));
+	private isValidDictionaryEntry(response: any): response is ValidDictionaryResponse {
+		return Boolean(response.payload.value);
+	}
+
+	private handleInValidWordError(): InvalidWord {
+		return {
+			message: 'The word must have a value',
+		};
+	}
+
+	private handleApplicationError(): ApplicationError {
+		return {
+			message: 'An unexpected error occured',
+		};
 	}
 }
