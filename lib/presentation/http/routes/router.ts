@@ -8,6 +8,8 @@ const router = express.Router();
 const Endpoints = Object.freeze({
 	WORD: '/:word',
 	PART_OF_SPEECH: '/:word/partofspeech',
+	WORD_FORMS: '/:word/wordforms',
+	MEANINGS: '/:word/meanings',
 });
 
 export default (server: express.Express, services: Services) => {
@@ -15,11 +17,12 @@ export default (server: express.Express, services: Services) => {
 
 	router.get(Endpoints.WORD, dictionaryController.getWord());
 	router.get(Endpoints.PART_OF_SPEECH, dictionaryController.getPartOfSpeech());
+	router.get(Endpoints.WORD_FORMS, dictionaryController.getWordForms());
+	router.get(Endpoints.MEANINGS, dictionaryController.getMeanings());
 	router.get('*', function (req, res) {
 		res.status(404).json({
 			message: 'Not found',
 			status: 404,
-			additionalInfo: {},
 		});
 	});
 
