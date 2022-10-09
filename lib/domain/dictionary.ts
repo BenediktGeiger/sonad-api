@@ -1,10 +1,23 @@
-import { UnexpectedDomainError, WordInvalidError } from '@lib/domain/errors';
-import DictionaryEntry from '@lib/domain/dictionary-entry';
+import { IDictionaryEntry } from '@lib/domain/dictionary-entry';
 
 import { Either } from '@lib/common/either';
 
-export type Response = Either<UnexpectedDomainError | WordInvalidError, DictionaryEntry>;
+export type InvalidDictionaryResponse = {
+	message: string;
+	value: null;
+};
+
+export type ValidDictionaryResponse = {
+	value: IDictionaryEntry;
+};
+
+export type DomainError = {
+	message: string;
+	error?: any;
+};
+
+export type DictionaryResponse = Either<DomainError, InvalidDictionaryResponse | ValidDictionaryResponse>;
 
 export default interface Dictionary {
-	getWord(word: string): Promise<Response>;
+	getWord(word: string): Promise<DictionaryResponse>;
 }

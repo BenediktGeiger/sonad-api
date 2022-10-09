@@ -1,14 +1,13 @@
-import puppeteer, { Page } from 'puppeteer';
 import Dictionary from '@lib/domain/dictionary';
-import { Response } from '@lib/domain/dictionary';
+import { DictionaryResponse } from '@lib/domain/dictionary';
 import { DictionaryEntry } from '@lib/domain/dictionary-entry';
 import LoggerInterface from '@lib/domain/logger/logger-interface';
 import { right, left } from '@lib/common/either';
 import { asyncStopWatch } from '@lib/common/stop-watch';
-import { WordInvalidError } from '@lib/domain/errors/index';
 import WordFormsFinder from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { parseMeanings } from '@lib/infrastructure/dictionaries/sonaveeb/meanings';
 import { parsePartOfSpeech } from '@lib/infrastructure/dictionaries/sonaveeb/part-of-speech';
+import BrowserInstance from '@lib/infrastructure/dictionaries/sonaveeb/browser';
 
 export default class DictonarySonaveeb implements Dictionary {
 	private logger: LoggerInterface;
@@ -19,28 +18,9 @@ export default class DictonarySonaveeb implements Dictionary {
 		this.wordFormsFinder = wordFormsFinder;
 	}
 
-	async getWord(word: string): Promise<Response> {
+	async getWord(word: string): Promise<DictionaryResponse> {
 		try {
-			const browser = await asyncStopWatch(
-				puppeteer.launch,
-				this.logger
-			)({
-				devtools: true,
-				headless: true,
-				args: ['--disable-setuid-sandbox'],
-				ignoreHTTPSErrors: true,
-			});
-
-			const page: Page = await asyncStopWatch(browser.newPage.bind(browser), this.logger)();
-
-			await page.setRequestInterception(true);
-			page.on('request', (req) => {
-				if (req.resourceType() === 'image') {
-					req.abort();
-				} else {
-					req.continue();
-				}
-			});
+			const page = await asyncStopWatch(BrowserInstance.getPage.bind(BrowserInstance), this.logger)();
 
 			await asyncStopWatch(page.goto.bind(page), this.logger)(
 				`https://sonaveeb.ee/search/unif/est/eki/${word}/1`,
@@ -52,7 +32,10 @@ export default class DictonarySonaveeb implements Dictionary {
 			const partOfSpeechesTags = await asyncStopWatch(parsePartOfSpeech, this.logger)(page);
 
 			if (!partOfSpeechesTags.length) {
-				return left(WordInvalidError.create(word));
+				return right({
+					message: `The word ${word} is not in the dictionary`,
+					value: null,
+				});
 			}
 
 			const meanings = await asyncStopWatch(parseMeanings, this.logger)(page);
@@ -64,11 +47,14 @@ export default class DictonarySonaveeb implements Dictionary {
 
 			const dictionaryEntry = new DictionaryEntry(word, partOfSpeechesTags, meanings, wordForms);
 
-			await asyncStopWatch(browser.close.bind(browser), this.logger)();
-
-			return right(dictionaryEntry);
+			return right({
+				value: dictionaryEntry,
+			});
 		} catch (err) {
-			return left(WordInvalidError.create(word));
+			return left({
+				message: 'An unexpected error occurred',
+				error: err,
+			});
 		}
 	}
 }

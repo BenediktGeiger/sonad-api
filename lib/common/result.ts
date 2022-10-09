@@ -2,7 +2,7 @@ export class Result<T> {
 	private value: T | undefined;
 	public isSuccess: boolean;
 	public isFailure: boolean;
-	public error: T | null;
+	private error: T | null;
 
 	public constructor(isSuccess: boolean, error: T | null, value?: T) {
 		if (isSuccess && error) {
@@ -20,9 +20,9 @@ export class Result<T> {
 		Object.freeze(this);
 	}
 
-	public getValue(): T | undefined {
+	public getResult(): T | undefined | null {
 		if (!this.isSuccess) {
-			throw new Error(`Cant retrieve the value from a failed result.`);
+			return this.error;
 		}
 
 		return this.value;

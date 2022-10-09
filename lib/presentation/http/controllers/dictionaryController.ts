@@ -22,9 +22,28 @@ export default class DictionaryController {
 		)(word);
 
 		if (wordResult.isLeft()) {
-			return next(new CustomError('Word Not Found', 404));
+			return next(new CustomError('Something went wrong', 500));
 		}
 
-		return res.json(wordResult.value);
+		await req.cache.set(req.originalUrl, JSON.stringify(wordResult.payload));
+
+		res.json(wordResult.payload);
+	};
+
+	getPartOfSpeech = () => async (req: Request, res: Response, next: NextFunction) => {
+		const word = req?.params?.word;
+
+		const wordResult = await asyncStopWatch(
+			this.dictionaryService.getPartOfSpeech.bind(this.dictionaryService),
+			this.logger
+		)(word);
+
+		if (wordResult.isLeft()) {
+			return next(new CustomError('Something went wrong', 500));
+		}
+
+		await req.cache.set(req.originalUrl, JSON.stringify(wordResult.payload));
+
+		return res.json(wordResult.payload);
 	};
 }
