@@ -6,7 +6,10 @@ import { requestCounter, requestDuration } from '@lib/presentation/http/prom';
 const values = Object.freeze(['v1', 'wordforms', 'meanings', 'partofspeech', 'metrics']);
 
 const normalizePath = (originalUrl: string) => {
-	const chunks = originalUrl.split('/').filter((chunk) => chunk !== '');
+	const chunks = originalUrl
+		.split('/')
+		.filter((chunk) => chunk !== '')
+		.map((chunk) => chunk.toLowerCase());
 
 	const valueIndexes: number[] = [];
 	for (let i = 0; i < chunks.length; i++) {
