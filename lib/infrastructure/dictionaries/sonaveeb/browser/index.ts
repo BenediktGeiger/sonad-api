@@ -1,4 +1,5 @@
 import puppeteer, { Page } from 'puppeteer';
+import isDocker from '@lib/common/is-docker';
 
 class PrivatePageSingleton {
 	private readonly page: Page;
@@ -20,12 +21,8 @@ class PageSingleton {
 
 	static async getPage() {
 		if (!this.instance) {
-			const browser = await puppeteer.launch({
-				devtools: true,
-				headless: true,
-				args: ['--disable-setuid-sandbox'],
-				ignoreHTTPSErrors: true,
-			});
+			const launchOptions = this.getLaunchOptions();
+			const browser = await puppeteer.launch(launchOptions);
 
 			const page = await browser.newPage();
 			await page.setRequestInterception(true);
@@ -39,6 +36,24 @@ class PageSingleton {
 			this.instance = new PrivatePageSingleton(page);
 		}
 		return this.instance.getPage();
+	}
+
+	private static getLaunchOptions() {
+		if (isDocker()) {
+			return {
+				executablePath: '/usr/bin/chromium-browser',
+				devtools: true,
+				headless: true,
+				args: ['--disable-setuid-sandbox', '--no-sandbox'],
+				ignoreHTTPSErrors: true,
+			};
+		}
+
+		return {
+			headless: true,
+			args: ['--disable-setuid-sandbox'],
+			ignoreHTTPSErrors: true,
+		};
 	}
 }
 

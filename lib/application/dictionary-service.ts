@@ -1,12 +1,12 @@
 import Dictionary from '@lib/domain/dictionary';
 import DictionaryCache from '@lib/domain/cache-repository';
+import { IDictionaryEntry } from '@lib/domain/dictionary-entry';
 
-import { DictionaryResponse } from '@lib/domain/dictionary';
-import { InvalidDictionaryResponse, ValidDictionaryResponse } from '@lib/domain/dictionary';
+import { DictionaryResult, DictionaryResponse } from '@lib/domain/dictionary';
 import Logger from '@lib/domain/logger/logger-interface';
 import { partOfSpeechesTag, WordForm, Meaning } from '@lib/domain/dictionary-entry';
 
-import { Either, left, right, Left } from '@lib/common/either';
+import { Either, left, right } from '@lib/common/either';
 
 type ApplicationError = {
 	message: string;
@@ -17,22 +17,36 @@ type InvalidWord = {
 	message: string;
 };
 
+type WordResult = {
+	word: string;
+	partOfSpeech: partOfSpeechesTag[];
+	wordForms: WordForm;
+	meanings: Meaning[];
+	additionalInfo?: string;
+};
+
 type PartOfSpeechResult = {
-	value: partOfSpeechesTag[];
+	word: string;
+	partOfSpeech: partOfSpeechesTag[] | null;
+	additionalInfo?: string;
 };
 
 type WordFormsResult = {
-	value: WordForm;
+	word: string;
+	wordForms: WordForm | null;
+	additionalInfo?: string;
 };
 
 type MeaningsResult = {
-	value: WordForm[];
+	word: string;
+	meanings: Meaning[] | null;
+	additionalInfo?: string;
 };
 
-type WordResponse = Either<ApplicationError | InvalidWord, ValidDictionaryResponse | InvalidDictionaryResponse>;
-type PartofSpeechResponse = Either<ApplicationError | InvalidWord, PartOfSpeechResult | InvalidDictionaryResponse>;
-type WordFormsResponse = Either<ApplicationError | InvalidWord, WordFormsResult | InvalidDictionaryResponse>;
-type MeaningsResponse = Either<ApplicationError | InvalidWord, MeaningsResult | InvalidDictionaryResponse>;
+type WordResponse = Either<ApplicationError | InvalidWord, WordResult>;
+type PartofSpeechResponse = Either<ApplicationError | InvalidWord, PartOfSpeechResult>;
+type WordFormsResponse = Either<ApplicationError | InvalidWord, WordFormsResult | DictionaryResult>;
+type MeaningsResponse = Either<ApplicationError | InvalidWord, MeaningsResult | DictionaryResult>;
 
 export default class DictionaryService {
 	private dictionary: Dictionary;
@@ -53,7 +67,23 @@ export default class DictionaryService {
 			return left(this.handleApplicationError());
 		}
 
-		return right(dictionaryResponse.payload);
+		const dictionaryEntry = dictionaryResponse.payload;
+
+		const result: WordResult = {
+			word: dictionaryEntry.getWord(),
+			partOfSpeech: dictionaryEntry.getPartOfSpeech(),
+			wordForms: dictionaryEntry.getWordForms(),
+			meanings: dictionaryEntry.getMeanings(),
+		};
+
+		if (!this.dictionaryEntryExists(dictionaryEntry)) {
+			return right({
+				...result,
+				additionalInfo: `The word ${word} doesn't exists dictionary`,
+			});
+		}
+
+		return right(result);
 	}
 
 	async getPartOfSpeech(word: string): Promise<PartofSpeechResponse> {
@@ -67,20 +97,21 @@ export default class DictionaryService {
 			return left(this.handleApplicationError());
 		}
 
-		if (!this.isValidDictionaryEntry(dictionaryResponse)) {
+		const dictionaryEntry = dictionaryResponse.payload;
+
+		const result: PartOfSpeechResult = {
+			word: dictionaryEntry.getWord(),
+			partOfSpeech: dictionaryEntry.getPartOfSpeech(),
+		};
+
+		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
-				message: `The word ${word} is not in the dictionary`,
-				value: null,
+				...result,
+				additionalInfo: `The word ${word} doesn't exists dictionary`,
 			});
 		}
 
-		const dictionaryEntry = dictionaryResponse?.payload?.value;
-
-		if (!dictionaryEntry?.partOfSpeech) {
-			return left(this.handleApplicationError());
-		}
-
-		return right({ value: dictionaryEntry.partOfSpeech });
+		return right(result);
 	}
 
 	async getWordForms(word: string): Promise<WordFormsResponse> {
@@ -94,20 +125,21 @@ export default class DictionaryService {
 			return left(this.handleApplicationError());
 		}
 
-		if (!this.isValidDictionaryEntry(dictionaryResponse)) {
+		const dictionaryEntry = dictionaryResponse.payload;
+
+		const result: WordFormsResult = {
+			word: dictionaryEntry.getWord(),
+			wordForms: dictionaryEntry.getWordForms(),
+		};
+
+		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
-				message: `The word ${word} is not in the dictionary`,
-				value: null,
+				...result,
+				additionalInfo: `The word ${word} doesn't exists dictionary`,
 			});
 		}
 
-		const dictionaryEntry = dictionaryResponse?.payload?.value;
-
-		if (!dictionaryEntry?.wordForms) {
-			return left(this.handleApplicationError());
-		}
-
-		return right({ value: dictionaryEntry.wordForms });
+		return right(result);
 	}
 
 	async getMeanings(word: string): Promise<MeaningsResponse> {
@@ -121,24 +153,25 @@ export default class DictionaryService {
 			return left(this.handleApplicationError());
 		}
 
-		if (!this.isValidDictionaryEntry(dictionaryResponse)) {
+		const dictionaryEntry = dictionaryResponse.payload;
+
+		const result: MeaningsResult = {
+			word: dictionaryEntry.getWord(),
+			meanings: dictionaryEntry.getMeanings(),
+		};
+
+		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
-				message: `The word ${word} is not in the dictionary`,
-				value: null,
+				...result,
+				additionalInfo: `The word ${word} doesn't exists dictionary`,
 			});
 		}
 
-		const dictionaryEntry = dictionaryResponse?.payload?.value;
-
-		if (!dictionaryEntry?.meanings) {
-			return left(this.handleApplicationError());
-		}
-
-		return right({ value: dictionaryEntry.meanings });
+		return right(result);
 	}
 
-	private isValidDictionaryEntry(response: any): response is ValidDictionaryResponse {
-		return Boolean(response.payload.value);
+	private dictionaryEntryExists(entry: IDictionaryEntry): boolean {
+		return Boolean(entry.getPartOfSpeech().length);
 	}
 
 	private handleInValidWordError(): InvalidWord {

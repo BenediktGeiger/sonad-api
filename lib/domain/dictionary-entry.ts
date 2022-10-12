@@ -114,6 +114,7 @@ export interface IDictionaryEntry {
 	wordForms: WordForm;
 	partOfSpeech: partOfSpeechesTag[];
 	meanings: Meaning[];
+	getWord(): string;
 	getPartOfSpeech(): partOfSpeechesTag[];
 	getWordForms(): WordForm;
 	getMeanings(): Meaning[];
@@ -130,6 +131,9 @@ export class DictionaryEntry implements IDictionaryEntry {
 		this.partOfSpeech = partOfSpeech;
 		this.wordForms = wordForms;
 		this.meanings = meanings;
+	}
+	getWord(): string {
+		return this.word;
 	}
 	getPartOfSpeech(): partOfSpeechesTag[] {
 		return this.partOfSpeech;

@@ -17,9 +17,6 @@ export default class DictionaryInMemory implements Dictionary {
 		];
 
 		const dictionaryEntry = new DictionaryEntry(word, partOfSpeechesTags, meanings, wordForms);
-
-		return right({
-			value: dictionaryEntry,
-		});
+		return right(dictionaryEntry);
 	}
 }

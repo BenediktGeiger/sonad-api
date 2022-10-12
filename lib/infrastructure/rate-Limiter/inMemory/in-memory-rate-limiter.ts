@@ -11,7 +11,7 @@ export default class InMemoryRateLimiter implements RateLimiterCache {
 		this.inMemoryCounter = inMemoryCounter;
 	}
 	async hasReachedRateLimit(key: string): Promise<boolean> {
-		return Boolean(this.inMemoryCounter[key] >= 19);
+		return Boolean(this.inMemoryCounter[key] >= 100);
 	}
 
 	incr(key: string) {

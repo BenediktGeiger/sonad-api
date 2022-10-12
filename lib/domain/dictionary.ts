@@ -2,13 +2,13 @@ import { IDictionaryEntry } from '@lib/domain/dictionary-entry';
 
 import { Either } from '@lib/common/either';
 
-export type InvalidDictionaryResponse = {
-	message: string;
-	value: null;
+type NotInDictionaryResult = {
+	word: string;
 };
 
-export type ValidDictionaryResponse = {
-	value: IDictionaryEntry;
+export type DictionaryResult = {
+	dictionaryEntry: IDictionaryEntry | NotInDictionaryResult;
+	entryExists: boolean;
 };
 
 export type DomainError = {
@@ -16,7 +16,7 @@ export type DomainError = {
 	error?: any;
 };
 
-export type DictionaryResponse = Either<DomainError, InvalidDictionaryResponse | ValidDictionaryResponse>;
+export type DictionaryResponse = Either<DomainError, IDictionaryEntry>;
 
 export default interface Dictionary {
 	getWord(word: string): Promise<DictionaryResponse>;

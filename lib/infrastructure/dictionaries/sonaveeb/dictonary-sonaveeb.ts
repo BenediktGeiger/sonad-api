@@ -1,6 +1,6 @@
 import Dictionary from '@lib/domain/dictionary';
 import { DictionaryResponse } from '@lib/domain/dictionary';
-import { DictionaryEntry } from '@lib/domain/dictionary-entry';
+import { DictionaryEntry, IDictionaryEntry } from '@lib/domain/dictionary-entry';
 import LoggerInterface from '@lib/domain/logger/logger-interface';
 import { right, left } from '@lib/common/either';
 import { asyncStopWatch } from '@lib/common/stop-watch';
@@ -32,10 +32,8 @@ export default class DictonarySonaveeb implements Dictionary {
 			const partOfSpeechesTags = await asyncStopWatch(parsePartOfSpeech, this.logger)(page);
 
 			if (!partOfSpeechesTags.length) {
-				return right({
-					message: `The word ${word} is not in the dictionary`,
-					value: null,
-				});
+				const dictionaryEntry = new DictionaryEntry(word, [], [], []);
+				return right(dictionaryEntry);
 			}
 
 			const meanings = await asyncStopWatch(parseMeanings, this.logger)(page);
@@ -47,10 +45,12 @@ export default class DictonarySonaveeb implements Dictionary {
 
 			const dictionaryEntry = new DictionaryEntry(word, partOfSpeechesTags, meanings, wordForms);
 
-			return right({
-				value: dictionaryEntry,
-			});
+			return right(dictionaryEntry);
 		} catch (err) {
+			this.logger.error({
+				message: JSON.stringify(err),
+				method: 'getWord',
+			});
 			return left({
 				message: 'An unexpected error occurred',
 				error: err,
