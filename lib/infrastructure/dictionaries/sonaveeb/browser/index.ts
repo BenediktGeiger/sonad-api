@@ -1,5 +1,4 @@
 import puppeteer, { Page } from 'puppeteer';
-import isDocker from '@lib/common/is-docker';
 
 class PrivatePageSingleton {
 	private readonly page: Page;
@@ -38,10 +37,12 @@ class PageSingleton {
 		return this.instance.getPage();
 	}
 
+	private static isDocker() {
+		return Boolean(process?.env?.RUNNER === 'docker');
+	}
+
 	private static getLaunchOptions() {
-		const isDockerEnv = isDocker();
-		console.log('isDocker', isDockerEnv);
-		if (isDocker()) {
+		if (this.isDocker()) {
 			return {
 				executablePath: '/usr/bin/chromium-browser',
 				devtools: true,
