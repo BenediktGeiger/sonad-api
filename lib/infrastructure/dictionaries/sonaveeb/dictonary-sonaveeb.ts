@@ -1,6 +1,6 @@
 import Dictionary from '@lib/domain/dictionary';
 import { DictionaryResponse } from '@lib/domain/dictionary';
-import { DictionaryEntry, IDictionaryEntry } from '@lib/domain/dictionary-entry';
+import { DictionaryEntry } from '@lib/domain/dictionary-entry';
 import LoggerInterface from '@lib/domain/logger/logger-interface';
 import { right, left } from '@lib/common/either';
 import { asyncStopWatch } from '@lib/common/stop-watch';
@@ -47,6 +47,7 @@ export default class DictonarySonaveeb implements Dictionary {
 
 			return right(dictionaryEntry);
 		} catch (err) {
+			console.log(err);
 			this.logger.error({
 				message: JSON.stringify(err),
 				method: 'getWord',
