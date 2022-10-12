@@ -8,7 +8,7 @@
     "dev:build": "$(npm bin)/tsc -w",
     "dev:run": "nodemon -e ts,tsc --exec \"node --inspect=5858 -r ts-node/register ./lib/index.ts\"",
     "dev": "$(npm bin)/concurrently npm:dev:*",
-    "start": "node dist/index.js",
+    "start": "NODE_ENV=production node dist/index.js",
     "debug": "concurrently \"npx tsc --watch\" \"nodemon --inspect=1900 -q dist/index.js\"",
     "lint": "eslint ./lib --ext .ts",
     "prettier-format": "prettier --config .prettierrc 'lib/**/*.ts' --write"
