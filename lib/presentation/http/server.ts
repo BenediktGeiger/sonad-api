@@ -15,6 +15,7 @@ import {
 const createServer = async (services: Services) => {
 	const server = express();
 
+	server.disable('etag');
 	server.use(metrics());
 	server.use(corsHandler);
 	server.use(jsonParser);
