@@ -79,7 +79,7 @@ export default class DictionaryService {
 		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
 				...result,
-				additionalInfo: `The word ${word} doesn't exists dictionary`,
+				additionalInfo: `The word ${word} doesn't exist in the dictionary`,
 			});
 		}
 
@@ -107,7 +107,7 @@ export default class DictionaryService {
 		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
 				...result,
-				additionalInfo: `The word ${word} doesn't exists dictionary`,
+				additionalInfo: `The word ${word} doesn't exist in the dictionary`,
 			});
 		}
 
@@ -135,7 +135,7 @@ export default class DictionaryService {
 		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
 				...result,
-				additionalInfo: `The word ${word} doesn't exists dictionary`,
+				additionalInfo: `The word ${word} doesn't exist in the dictionary`,
 			});
 		}
 
@@ -163,7 +163,7 @@ export default class DictionaryService {
 		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
 				...result,
-				additionalInfo: `The word ${word} doesn't exists dictionary`,
+				additionalInfo: `The word ${word} doesn't exist in the dictionary`,
 			});
 		}
 
