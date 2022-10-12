@@ -39,6 +39,8 @@ class PageSingleton {
 	}
 
 	private static getLaunchOptions() {
+		const isDockerEnv = isDocker();
+		console.log('isDocker', isDockerEnv);
 		if (isDocker()) {
 			return {
 				executablePath: '/usr/bin/chromium-browser',
