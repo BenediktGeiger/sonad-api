@@ -4,7 +4,7 @@ import { Services } from '@lib/config/service-locator';
 const bindServices = (services: Services) => (req: Request, res: Response, next: NextFunction) => {
 	req.rateLimiter = services.rateLimiter;
 	req.logger = services.logger;
-	req.cache = services.cacheRepository;
+	req.cache = services.dictionaryCache;
 	next();
 };
 

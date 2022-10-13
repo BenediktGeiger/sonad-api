@@ -11,7 +11,7 @@ import Redis from 'ioredis';
 
 export type Services = {
 	dictionary: DictionaryInterface;
-	cacheRepository: DictionaryCacheInterface;
+	dictionaryCache: DictionaryCacheInterface;
 	logger: LoggerInterface;
 	rateLimiter: RateLimiterCacheInterface;
 };
@@ -23,7 +23,7 @@ export function buildServices(): Services {
 
 	const services = {
 		dictionary: DictionaryFactory.getDictionary(logger),
-		cacheRepository: new RedisDictionaryCache(redisClient),
+		dictionaryCache: new RedisDictionaryCache(redisClient),
 		logger,
 		rateLimiter: RateLimiterFactory.getRateLimiter(redisClient),
 	};
