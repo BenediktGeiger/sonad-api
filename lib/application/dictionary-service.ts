@@ -90,7 +90,7 @@ export default class DictionaryService {
 		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
 				...result,
-				additionalInfo: `The word ${word} doesn't exist in the dictionary`,
+				additionalInfo: `www.sonaveeb.ee has no matching result for ${word}`,
 			});
 		}
 
@@ -118,7 +118,7 @@ export default class DictionaryService {
 		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
 				...result,
-				additionalInfo: `The word ${word} doesn't exist in the dictionary`,
+				additionalInfo: `www.sonaveeb.ee has no matching result for ${word}`,
 			});
 		}
 
@@ -146,7 +146,7 @@ export default class DictionaryService {
 		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
 				...result,
-				additionalInfo: `The word ${word} doesn't exist in the dictionary`,
+				additionalInfo: `www.sonaveeb.ee has no matching result for ${word}`,
 			});
 		}
 
@@ -174,7 +174,7 @@ export default class DictionaryService {
 		if (!this.dictionaryEntryExists(dictionaryEntry)) {
 			return right({
 				...result,
-				additionalInfo: `The word ${word} doesn't exist in the dictionary`,
+				additionalInfo: `www.sonaveeb.ee has no matching result for ${word}`,
 			});
 		}
 
