@@ -1,4 +1,4 @@
-import puppeteer, { Page } from 'puppeteer';
+import puppeteer, { Page, Browser } from 'puppeteer';
 
 class PrivatePageSingleton {
 	private readonly page: Page;
@@ -11,6 +11,58 @@ class PrivatePageSingleton {
 	}
 }
 
+class PrivateBrowserSingleton {
+	private readonly browser: Browser;
+	constructor(browser: Browser) {
+		this.browser = browser;
+	}
+
+	getBrowser() {
+		return this.browser;
+	}
+}
+
+export class BrowserSingleton {
+	private static instance: PrivateBrowserSingleton;
+
+	private constructor() {
+		throw new Error('Singleton, use getInstance() instead');
+	}
+
+	static async getBrowser() {
+		if (!this.instance) {
+			const launchOptions = this.getLaunchOptions();
+			const browser = await puppeteer.launch(launchOptions);
+
+			this.instance = new PrivateBrowserSingleton(browser);
+		}
+		return this.instance.getBrowser();
+	}
+
+	private static isDocker() {
+		return Boolean(process?.env?.RUNNER === 'docker');
+	}
+
+	private static getLaunchOptions() {
+		if (this.isDocker()) {
+			return {
+				executablePath: '/usr/bin/chromium-browser',
+				devtools: true,
+				headless: true,
+				args: ['--disable-setuid-sandbox', '--no-sandbox'],
+				ignoreHTTPSErrors: true,
+			};
+		}
+
+		return {
+			headless: true,
+			args: ['--disable-setuid-sandbox'],
+			ignoreHTTPSErrors: true,
+		};
+	}
+}
+
+// TODO remove, deprecated
 class PageSingleton {
 	private static instance: PrivatePageSingleton;
 

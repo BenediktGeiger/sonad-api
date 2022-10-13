@@ -7,7 +7,7 @@ import { asyncStopWatch } from '@lib/common/stop-watch';
 import WordFormsFinder from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { parseMeanings } from '@lib/infrastructure/dictionaries/sonaveeb/meanings';
 import { parsePartOfSpeech } from '@lib/infrastructure/dictionaries/sonaveeb/part-of-speech';
-import BrowserInstance from '@lib/infrastructure/dictionaries/sonaveeb/browser';
+import { BrowserSingleton } from '@lib/infrastructure/dictionaries/sonaveeb/browser';
 
 export default class DictonarySonaveeb implements Dictionary {
 	private logger: LoggerInterface;
@@ -20,7 +20,17 @@ export default class DictonarySonaveeb implements Dictionary {
 
 	async getWord(word: string): Promise<DictionaryResponse> {
 		try {
-			const page = await asyncStopWatch(BrowserInstance.getPage.bind(BrowserInstance), this.logger)();
+			const browser = await BrowserSingleton.getBrowser();
+
+			const page = await browser.newPage();
+			await page.setRequestInterception(true);
+			page.on('request', (req) => {
+				if (req.resourceType() === 'image') {
+					req.abort();
+				} else {
+					req.continue();
+				}
+			});
 
 			await asyncStopWatch(page.goto.bind(page), this.logger)(
 				`https://sonaveeb.ee/search/unif/est/eki/${word}/1`,
