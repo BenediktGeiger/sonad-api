@@ -144,6 +144,15 @@ export class DictionaryEntry implements IDictionaryEntry {
 	getMeanings(): Meaning[] {
 		return this.meanings;
 	}
+	toJSON() {
+		return Object.assign({}, this);
+	}
+
+	static fromJSON(json: any) {
+		const dictionaryEntry = Object.create(DictionaryEntry.prototype);
+
+		return Object.assign(dictionaryEntry, json);
+	}
 }
 
 export default IDictionaryEntry;

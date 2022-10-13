@@ -1,6 +1,6 @@
 import Dictionary from '@lib/domain/dictionary';
 import DictionaryCache from '@lib/domain/cache-repository';
-import { IDictionaryEntry } from '@lib/domain/dictionary-entry';
+import { IDictionaryEntry, DictionaryEntry } from '@lib/domain/dictionary-entry';
 
 import { DictionaryResult, DictionaryResponse } from '@lib/domain/dictionary';
 import Logger from '@lib/domain/logger/logger-interface';
@@ -51,9 +51,20 @@ type MeaningsResponse = Either<ApplicationError | InvalidWord, MeaningsResult | 
 export default class DictionaryService {
 	private dictionary: Dictionary;
 	private logger: Logger;
-	constructor({ dictionary, logger }: { dictionary: Dictionary; cacheRepository: DictionaryCache; logger: Logger }) {
+	private dictionaryCache: DictionaryCache;
+
+	constructor({
+		dictionary,
+		logger,
+		dictionaryCache,
+	}: {
+		dictionary: Dictionary;
+		dictionaryCache: DictionaryCache;
+		logger: Logger;
+	}) {
 		this.dictionary = dictionary;
 		this.logger = logger;
+		this.dictionaryCache = dictionaryCache;
 	}
 
 	async getWord(word: string): Promise<WordResponse> {
@@ -61,7 +72,7 @@ export default class DictionaryService {
 			return left(this.handleInValidWordError());
 		}
 
-		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
+		const dictionaryResponse: DictionaryResponse = await this.getDictionaryEntry(word);
 
 		if (dictionaryResponse.isLeft()) {
 			return left(this.handleApplicationError());
@@ -91,7 +102,7 @@ export default class DictionaryService {
 			return left(this.handleInValidWordError());
 		}
 
-		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
+		const dictionaryResponse: DictionaryResponse = await this.getDictionaryEntry(word);
 
 		if (dictionaryResponse.isLeft()) {
 			return left(this.handleApplicationError());
@@ -119,7 +130,7 @@ export default class DictionaryService {
 			return left(this.handleInValidWordError());
 		}
 
-		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
+		const dictionaryResponse: DictionaryResponse = await this.getDictionaryEntry(word);
 
 		if (dictionaryResponse.isLeft()) {
 			return left(this.handleApplicationError());
@@ -147,7 +158,7 @@ export default class DictionaryService {
 			return left(this.handleInValidWordError());
 		}
 
-		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
+		const dictionaryResponse: DictionaryResponse = await this.getDictionaryEntry(word);
 
 		if (dictionaryResponse.isLeft()) {
 			return left(this.handleApplicationError());
@@ -168,6 +179,24 @@ export default class DictionaryService {
 		}
 
 		return right(result);
+	}
+
+	private async getDictionaryEntry(word: string): Promise<DictionaryResponse> {
+		const cachedDictionaryEntry = await this.dictionaryCache.get(word);
+
+		if (cachedDictionaryEntry) {
+			const dictionaryEntry = DictionaryEntry.fromJSON(JSON.parse(cachedDictionaryEntry));
+
+			return right(dictionaryEntry);
+		}
+
+		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
+
+		if (dictionaryResponse.isRight()) {
+			await this.dictionaryCache.set(word, JSON.stringify(dictionaryResponse.payload));
+		}
+
+		return dictionaryResponse;
 	}
 
 	private dictionaryEntryExists(entry: IDictionaryEntry): boolean {
