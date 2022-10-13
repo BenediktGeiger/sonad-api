@@ -7,6 +7,7 @@ import AdverbStrategy from '@lib/infrastructure/dictionaries/sonaveeb/word-forms
 import ExclamationStrategy from '@lib/infrastructure/dictionaries/sonaveeb/word-forms/strategies/exclamation-strategy';
 import ConjunctionStrategy from '@lib/infrastructure/dictionaries/sonaveeb/word-forms/strategies/conjunction-strategy';
 import PrePostPositionStrategy from '@lib/infrastructure/dictionaries/sonaveeb/word-forms/strategies/pre-post-positions-strategy';
+import ComplementStrategy from '@lib/infrastructure/dictionaries/sonaveeb/word-forms/strategies/complement-strategy';
 import DefaultStrategy from '@lib/infrastructure/dictionaries/sonaveeb/word-forms/strategies/default-strategy';
 
 export {
@@ -19,5 +20,6 @@ export {
 	ExclamationStrategy,
 	ConjunctionStrategy,
 	PrePostPositionStrategy,
+	ComplementStrategy,
 	DefaultStrategy,
 };

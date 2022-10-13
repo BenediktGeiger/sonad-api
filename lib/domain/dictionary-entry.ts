@@ -82,6 +82,10 @@ export type PrePostPositionForm = {
 	muutumatu: string;
 };
 
+export type ComplementForm = {
+	muutumatu: string;
+};
+
 export type UnknownForm = {
 	[key: string]: any;
 };
@@ -106,6 +110,7 @@ export type WordForm =
 	| ConjunctionForm
 	| ExclamationForm
 	| PrePostPositionForm
+	| ComplementForm
 	| NumberWordForm
 	| UnknownForm;
 

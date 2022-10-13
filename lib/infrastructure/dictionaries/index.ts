@@ -13,6 +13,7 @@ import {
 	ExclamationStrategy,
 	ConjunctionStrategy,
 	PrePostPositionStrategy,
+	ComplementStrategy,
 	DefaultStrategy,
 } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms/strategies';
 
@@ -29,6 +30,7 @@ export default {
 				new ExclamationStrategy(),
 				new ConjunctionStrategy(),
 				new PrePostPositionStrategy(),
+				new ComplementStrategy(),
 				new DefaultStrategy(),
 			]);
 
