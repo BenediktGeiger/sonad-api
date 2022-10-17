@@ -47,7 +47,6 @@ export class BrowserSingleton {
 		if (this.isDocker()) {
 			return {
 				executablePath: '/usr/bin/chromium-browser',
-				devtools: true,
 				headless: true,
 				args: ['--disable-setuid-sandbox', '--no-sandbox'],
 				ignoreHTTPSErrors: true,
@@ -56,7 +55,7 @@ export class BrowserSingleton {
 
 		return {
 			headless: true,
-			args: ['--disable-setuid-sandbox'],
+			args: ['--disable-setuid-sandbox', '--no-sandbox'],
 			ignoreHTTPSErrors: true,
 		};
 	}
@@ -77,6 +76,7 @@ class PageSingleton {
 
 			const page = await browser.newPage();
 			await page.setRequestInterception(true);
+
 			page.on('request', (req) => {
 				if (req.resourceType() === 'image') {
 					req.abort();
@@ -97,7 +97,6 @@ class PageSingleton {
 		if (this.isDocker()) {
 			return {
 				executablePath: '/usr/bin/chromium-browser',
-				devtools: true,
 				headless: true,
 				args: ['--disable-setuid-sandbox', '--no-sandbox'],
 				ignoreHTTPSErrors: true,

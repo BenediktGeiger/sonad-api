@@ -7,25 +7,31 @@ import { asyncStopWatch } from '@lib/common/stop-watch';
 import WordFormsFinder from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { parseMeanings } from '@lib/infrastructure/dictionaries/sonaveeb/meanings';
 import { parsePartOfSpeech } from '@lib/infrastructure/dictionaries/sonaveeb/part-of-speech';
-import { BrowserSingleton } from '@lib/infrastructure/dictionaries/sonaveeb/browser';
+import { Browser } from 'puppeteer';
 
 export default class DictonarySonaveeb implements Dictionary {
 	private logger: LoggerInterface;
 	private wordFormsFinder: WordFormsFinder;
+	private browser: Browser;
 
-	constructor(logger: LoggerInterface, wordFormsFinder: WordFormsFinder) {
+	constructor(logger: LoggerInterface, wordFormsFinder: WordFormsFinder, browser: Browser) {
 		this.logger = logger;
 		this.wordFormsFinder = wordFormsFinder;
+		this.browser = browser;
 	}
 
 	async getWord(word: string): Promise<DictionaryResponse> {
 		try {
-			const browser = await BrowserSingleton.getBrowser();
+			const page = await this.browser.newPage();
 
-			const page = await browser.newPage();
 			await page.setRequestInterception(true);
+
 			page.on('request', (req) => {
-				if (req.resourceType() === 'image') {
+				if (
+					req.resourceType() == 'stylesheet' ||
+					req.resourceType() == 'font' ||
+					req.resourceType() == 'image'
+				) {
 					req.abort();
 				} else {
 					req.continue();
@@ -43,6 +49,7 @@ export default class DictonarySonaveeb implements Dictionary {
 
 			if (!partOfSpeechesTags.length) {
 				const dictionaryEntry = new DictionaryEntry(word, [], [], []);
+				await page.close();
 				return right(dictionaryEntry);
 			}
 
@@ -54,6 +61,8 @@ export default class DictonarySonaveeb implements Dictionary {
 			)(partOfSpeechesTags[0], page);
 
 			const dictionaryEntry = new DictionaryEntry(word, partOfSpeechesTags, meanings, wordForms);
+
+			await page.close();
 
 			return right(dictionaryEntry);
 		} catch (err) {

@@ -16,13 +16,14 @@ export type Services = {
 	rateLimiter: RateLimiterCacheInterface;
 };
 
-export function buildServices(): Services {
+export async function buildServices(): Promise<Services> {
 	const redisClient = new Redis(String(process.env.REDIS));
 
 	const logger = LoggerFactory.getLogger();
+	const dictionary = await DictionaryFactory.getDictionary(logger);
 
 	const services = {
-		dictionary: DictionaryFactory.getDictionary(logger),
+		dictionary,
 		dictionaryCache: new RedisDictionaryCache(redisClient),
 		logger,
 		rateLimiter: RateLimiterFactory.getRateLimiter(redisClient),
