@@ -25,16 +25,15 @@ const metrics = (req: Request, res: Response, time: number) => {
 	const { protocol, hostname, method, originalUrl } = req;
 	const { statusCode } = res;
 
-	req.logger.info({
-		message: `Response of ${method} ${protocol}://${hostname}${originalUrl} in ${time}ms with ${statusCode}`,
-		method: 'listen',
-	});
-
 	const normalizedPath = normalizePath(originalUrl);
 
 	if (normalizedPath.includes('metrics')) {
 		return;
 	}
+	req.logger.info({
+		message: `Response of ${method} ${protocol}://${hostname}${originalUrl} in ${time}ms with ${statusCode}`,
+		method: 'listen',
+	});
 
 	const labels = {
 		route: normalizedPath,
