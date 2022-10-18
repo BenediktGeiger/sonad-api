@@ -200,7 +200,11 @@ export default class DictionaryService {
 	}
 
 	private dictionaryEntryExists(entry: IDictionaryEntry): boolean {
-		return Boolean(entry.getPartOfSpeech().length);
+		return [
+			Boolean(entry.getPartOfSpeech().length),
+			Boolean(entry.getMeanings().length),
+			Boolean(Object.keys(entry.getWordForms()).length),
+		].some((entry) => entry);
 	}
 
 	private handleInValidWordError(): InvalidWord {
