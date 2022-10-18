@@ -24,9 +24,7 @@ export default class DictonarySonaveeb implements Dictionary {
 
 	async getWord(word: string): Promise<DictionaryResponse> {
 		try {
-			const resultHtml = await this.sonaveebClient.getResultPage(word);
-
-			const wordId = await this.getWordId(resultHtml);
+			const wordId = await this.getWordId(word);
 
 			if (!wordId) {
 				const dictionaryEntry = new DictionaryEntry(word, [], [], []);
@@ -63,11 +61,30 @@ export default class DictonarySonaveeb implements Dictionary {
 		}
 	}
 
-	private async getWordId(rawHtml: string) {
-		const root = parse(rawHtml);
+	private async getWordId(word: string) {
+		const resultHtml = await this.sonaveebClient.getResultPage(word);
+		const root = parse(resultHtml);
 
 		const wordId = root.querySelector('[name=word-id]');
 
-		return wordId?.getAttribute('value') ?? null;
+		if (wordId) {
+			return wordId.getAttribute('value') ?? null;
+		}
+
+		const otherForm = root.querySelector('[id=form-words] [data-word]');
+
+		if (!otherForm) {
+			return null;
+		}
+
+		const newWord = otherForm.textContent;
+
+		const resultHtmlNew = await this.sonaveebClient.getResultPage(newWord);
+
+		const rootNew = parse(resultHtmlNew);
+
+		const wordIdNew = rootNew.querySelector('[name=word-id]');
+
+		return wordIdNew?.getAttribute('value') ?? null;
 	}
 }
