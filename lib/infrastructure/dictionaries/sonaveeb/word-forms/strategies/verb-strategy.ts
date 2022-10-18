@@ -1,21 +1,21 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { VerbForm } from '@lib/domain/dictionary-entry';
 
 export default class VerbStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<VerbForm | void> {
+	async getWordForms(tableElement: HTMLElement, partOfSpeech: string): Promise<VerbForm | void> {
 		if (partOfSpeech !== 'tegusõna') {
 			return;
 		}
 
-		return page.evaluate(this.evaluateVerbTable, tableHandle);
+		return this.evaluateVerbTable(tableElement);
 	}
 
-	private evaluateVerbTable(table: Element) {
+	private evaluateVerbTable(table: HTMLElement) {
 		const tableCellElements = table.querySelectorAll('td');
 
 		const tableCellValues = [...tableCellElements]
-			.map((tableCell: Element) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
+			.map((tableCell: HTMLElement) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
 			.filter((value) => value);
 
 		return {

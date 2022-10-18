@@ -1,20 +1,20 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { AdjectiveForm } from '@lib/domain/dictionary-entry';
 export default class AdjectiveStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<AdjectiveForm | void> {
+	async getWordForms(tableElement: HTMLElement, partOfSpeech: string): Promise<AdjectiveForm | void> {
 		if (partOfSpeech !== 'omadussõna') {
 			return;
 		}
 
-		return page.evaluate(this.evaluateAdjectiveTable, tableHandle);
+		return this.evaluateAdjectiveTable(tableElement);
 	}
 
-	private evaluateAdjectiveTable(table: Element) {
+	private evaluateAdjectiveTable(table: HTMLElement) {
 		const tableCellElements = table.querySelectorAll('td');
 
 		const tableCellValues = [...tableCellElements]
-			.map((tableCell: Element) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
+			.map((tableCell: HTMLElement) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
 			.filter((value) => value);
 
 		return {

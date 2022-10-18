@@ -1,21 +1,21 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { NounForm } from '@lib/domain/dictionary-entry';
 
 export default class NounStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<NounForm | void> {
+	async getWordForms(tableElement: HTMLElement, partOfSpeech: string): Promise<NounForm | void> {
 		if (partOfSpeech !== 'nimisõna') {
 			return;
 		}
 
-		return page.evaluate(this.evaluateNounTable, tableHandle);
+		return this.evaluateNounTable(tableElement);
 	}
 
-	private evaluateNounTable(table: Element) {
+	private evaluateNounTable(table: HTMLElement) {
 		const tableCellElements = table.querySelectorAll('td');
 
 		const tableCellValues = [...tableCellElements]
-			.map((tableCell: Element) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
+			.map((tableCell: HTMLElement) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
 			.filter((value) => value);
 
 		return {

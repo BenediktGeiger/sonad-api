@@ -3,7 +3,6 @@ import Dictionary from '@lib/domain/dictionary';
 import Logger from '@lib/domain/logger/logger-interface';
 import DictionarySonaVeeb from '@lib/infrastructure/dictionaries/sonaveeb/dictonary-sonaveeb';
 import WordFormsFinder from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
-import { BrowserSingleton } from '@lib/infrastructure/dictionaries/sonaveeb/browser';
 import {
 	NounStrategy,
 	VerbStrategy,
@@ -17,6 +16,7 @@ import {
 	ComplementStrategy,
 	DefaultStrategy,
 } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms/strategies';
+import SonaVeebClient from '@lib/infrastructure/dictionaries/sonaveeb/api-client';
 
 export default {
 	async getDictionary(logger: Logger): Promise<Dictionary> {
@@ -35,9 +35,9 @@ export default {
 				new DefaultStrategy(),
 			]);
 
-			const browser = await BrowserSingleton.getBrowser();
+			const sonaVeebClient = new SonaVeebClient(logger);
 
-			return new DictionarySonaVeeb(logger, wordFormFinder, browser);
+			return new DictionarySonaVeeb(logger, wordFormFinder, sonaVeebClient);
 		}
 
 		return new DictionaryInMemory();

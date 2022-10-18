@@ -1,23 +1,19 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { PrePostPositionForm } from '@lib/domain/dictionary-entry';
 
 export default class PrePostPositionsStrategy implements WordFormStrategy {
-	async getWordForms(
-		page: Page,
-		tableHandle: ElementHandle,
-		partOfSpeech: string
-	): Promise<PrePostPositionForm | void> {
+	async getWordForms(tableElement: HTMLElement, partOfSpeech: string): Promise<PrePostPositionForm | void> {
 		if (partOfSpeech === 'eessõna' || partOfSpeech === 'tagasõna') {
-			return page.evaluate(this.evaluatePrePostPositionTable, tableHandle);
+			return this.evaluatePrePostPositionTable(tableElement);
 		}
 	}
 
-	private evaluatePrePostPositionTable(table: Element) {
+	private evaluatePrePostPositionTable(table: HTMLElement) {
 		const tableCellElements = table.querySelectorAll('td');
 
 		const tableCellValues = [...tableCellElements]
-			.map((tableCell: Element) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
+			.map((tableCell: HTMLElement) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
 			.filter((value) => value);
 
 		return {

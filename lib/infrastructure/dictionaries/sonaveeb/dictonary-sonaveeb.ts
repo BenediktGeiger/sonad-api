@@ -7,62 +7,47 @@ import { asyncStopWatch } from '@lib/common/stop-watch';
 import WordFormsFinder from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { parseMeanings } from '@lib/infrastructure/dictionaries/sonaveeb/meanings';
 import { parsePartOfSpeech } from '@lib/infrastructure/dictionaries/sonaveeb/part-of-speech';
-import { Browser } from 'puppeteer';
+import { parse } from 'node-html-parser';
+
+import SonaVeebClient from '@lib/infrastructure/dictionaries/sonaveeb/api-client';
 
 export default class DictonarySonaveeb implements Dictionary {
 	private logger: LoggerInterface;
 	private wordFormsFinder: WordFormsFinder;
-	private browser: Browser;
+	private sonaveebClient: SonaVeebClient;
 
-	constructor(logger: LoggerInterface, wordFormsFinder: WordFormsFinder, browser: Browser) {
+	constructor(logger: LoggerInterface, wordFormsFinder: WordFormsFinder, sonaveebClient: SonaVeebClient) {
 		this.logger = logger;
 		this.wordFormsFinder = wordFormsFinder;
-		this.browser = browser;
+		this.sonaveebClient = sonaveebClient;
 	}
 
 	async getWord(word: string): Promise<DictionaryResponse> {
 		try {
-			const page = await this.browser.newPage();
+			const resultHtml = await this.sonaveebClient.getResultPage(word);
 
-			await page.setRequestInterception(true);
+			const wordId = await this.getWordId(resultHtml);
 
-			page.on('request', (req) => {
-				if (
-					req.resourceType() == 'stylesheet' ||
-					req.resourceType() == 'font' ||
-					req.resourceType() == 'image'
-				) {
-					req.abort();
-				} else {
-					req.continue();
-				}
-			});
-
-			await asyncStopWatch(page.goto.bind(page), this.logger)(
-				`https://sonaveeb.ee/search/unif/est/eki/${word}/1`,
-				{
-					waitUntil: 'networkidle2',
-				}
-			);
-
-			const partOfSpeechesTags = await asyncStopWatch(parsePartOfSpeech, this.logger)(page);
-
-			if (!partOfSpeechesTags.length) {
+			if (!wordId) {
 				const dictionaryEntry = new DictionaryEntry(word, [], [], []);
-				await page.close();
+
 				return right(dictionaryEntry);
 			}
 
-			const meanings = await asyncStopWatch(parseMeanings, this.logger)(page);
+			const detailsHtml = await this.sonaveebClient.getWordDetailsHtml(String(wordId));
+
+			const rootElement = parse(detailsHtml);
+
+			const partOfSpeechesTags = await asyncStopWatch(parsePartOfSpeech, this.logger)(rootElement);
+
+			const meanings = await asyncStopWatch(parseMeanings, this.logger)(rootElement);
 
 			const wordForms = await asyncStopWatch(
 				this.wordFormsFinder.findWordForms.bind(this.wordFormsFinder),
 				this.logger
-			)(partOfSpeechesTags[0], page);
+			)(partOfSpeechesTags[0], rootElement);
 
 			const dictionaryEntry = new DictionaryEntry(word, partOfSpeechesTags, meanings, wordForms);
-
-			await page.close();
 
 			return right(dictionaryEntry);
 		} catch (err) {
@@ -76,5 +61,13 @@ export default class DictonarySonaveeb implements Dictionary {
 				error: err,
 			});
 		}
+	}
+
+	private async getWordId(rawHtml: string) {
+		const root = parse(rawHtml);
+
+		const wordId = root.querySelector('[name=word-id]');
+
+		return wordId?.getAttribute('value') ?? null;
 	}
 }

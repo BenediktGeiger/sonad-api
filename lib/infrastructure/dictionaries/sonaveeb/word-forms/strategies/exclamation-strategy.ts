@@ -1,21 +1,21 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { ExclamationForm } from '@lib/domain/dictionary-entry';
 
 export default class ExclamationStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<ExclamationForm | void> {
+	async getWordForms(tableElement: HTMLElement, partOfSpeech: string): Promise<ExclamationForm | void> {
 		if (partOfSpeech !== 'hüüdsõna') {
 			return;
 		}
 
-		return page.evaluate(this.evaluateExclamationTable, tableHandle);
+		return this.evaluateExclamationTable(tableElement);
 	}
 
-	private evaluateExclamationTable(table: Element) {
+	private evaluateExclamationTable(table: HTMLElement) {
 		const tableCellElements = table.querySelectorAll('td');
 
 		const tableCellValues = [...tableCellElements]
-			.map((tableCell: Element) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
+			.map((tableCell: HTMLElement) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
 			.filter((value) => value);
 
 		return {

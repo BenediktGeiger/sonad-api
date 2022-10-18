@@ -1,21 +1,21 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { NumberWordForm } from '@lib/domain/dictionary-entry';
 
 export default class NumberWordStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<NumberWordForm | void> {
+	async getWordForms(tableElement: HTMLElement, partOfSpeech: string): Promise<NumberWordForm | void> {
 		if (partOfSpeech !== 'arvsõna') {
 			return;
 		}
 
-		return page.evaluate(this.evaluateNumberWordTable, tableHandle);
+		return this.evaluateNumberWordTable(tableElement);
 	}
 
-	private evaluateNumberWordTable(table: Element) {
+	private evaluateNumberWordTable(table: HTMLElement) {
 		const tableCellElements = table.querySelectorAll('td');
 
 		const tableCellValues = [...tableCellElements]
-			.map((tableCell: Element) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
+			.map((tableCell: HTMLElement) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
 			.filter((value) => value);
 
 		return {

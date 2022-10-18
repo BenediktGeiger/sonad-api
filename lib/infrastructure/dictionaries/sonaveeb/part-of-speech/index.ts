@@ -1,18 +1,8 @@
-import { Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { partOfSpeechesTag } from '@lib/domain/dictionary-entry';
 
-const evaluatePartOfSpeechesTags = (element: Element) => {
-	const partofSpeech = element.textContent as partOfSpeechesTag;
-
-	return partofSpeech;
-};
-
-export const parsePartOfSpeech = async (page: Page): Promise<partOfSpeechesTag[]> => {
-	const partOfSpeeches = await page.$$("[class*='tag my-1']");
-
-	const partOfSpeechesTags = await Promise.all(
-		partOfSpeeches.map((partOfSpeech) => page.evaluate(evaluatePartOfSpeechesTags, partOfSpeech))
-	);
-
-	return partOfSpeechesTags;
+export const parsePartOfSpeech = async (root: HTMLElement): Promise<partOfSpeechesTag[]> => {
+	return root
+		.querySelectorAll("[class*='tag my-1']")
+		.map((element: HTMLElement) => element.textContent as partOfSpeechesTag);
 };

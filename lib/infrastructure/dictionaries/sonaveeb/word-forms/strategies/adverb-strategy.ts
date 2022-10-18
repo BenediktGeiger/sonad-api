@@ -1,21 +1,21 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { AdverbForm } from '@lib/domain/dictionary-entry';
 
 export default class AdverbStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<AdverbForm | void> {
+	async getWordForms(tableElement: HTMLElement, partOfSpeech: string): Promise<AdverbForm | void> {
 		if (partOfSpeech !== 'määrsõna') {
 			return;
 		}
 
-		return page.evaluate(this.evaluateAdverbTable, tableHandle);
+		return this.evaluateAdverbTable(tableElement);
 	}
 
-	private evaluateAdverbTable(table: Element) {
+	private evaluateAdverbTable(table: HTMLElement) {
 		const tableCellElements = table.querySelectorAll('td');
 
 		const tableCellValues = [...tableCellElements]
-			.map((tableCell: Element) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
+			.map((tableCell: HTMLElement) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
 			.filter((value) => value);
 
 		return {

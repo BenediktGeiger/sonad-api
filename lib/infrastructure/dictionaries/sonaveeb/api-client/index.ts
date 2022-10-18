@@ -1,8 +1,8 @@
 import { basePath } from '@lib/infrastructure/dictionaries/sonaveeb/api-client/constants';
+import LoggerInterface from '@lib/domain/logger/logger-interface';
 import urljoin from 'url-join';
 import nodeFetch from 'node-fetch';
 import fetchCookie from 'fetch-cookie';
-import { Result } from '@lib/common/result';
 
 const fetch = fetchCookie(nodeFetch);
 
@@ -13,9 +13,11 @@ type Request = {
 
 export default class SonaVeebClient {
 	readonly basePath: string;
+	private logger: LoggerInterface;
 
-	constructor() {
+	constructor(logger: LoggerInterface) {
 		this.basePath = basePath;
+		this.logger = logger;
 	}
 
 	async request(request: Request) {
@@ -24,46 +26,35 @@ export default class SonaVeebClient {
 		try {
 			const response = await fetch(url, request.options);
 			if (!response?.ok) {
-				throw new Error('Something went wrong');
+				throw new Error('Unable to reach sonavee.ee');
 			}
 
-			const responseValue = await response.text();
-			return Result.ok(responseValue);
+			return await response.text();
 		} catch (err) {
-			return Result.fail('Server Error');
+			this.logger.error({
+				message: JSON.stringify(err),
+				method: 'request',
+			});
+			throw err;
 		}
 	}
 
-	async getWordIdHtml({ word }: { word: string }) {
-		const path = urljoin('search/unif/dlall/dsall', word);
+	async getResultPage(word: string) {
+		const path = urljoin(`/search/unif/est/eki/${word}/1`);
 
 		const request: Request = {
 			path,
 			options: {
 				method: 'GET',
 				redirect: 'follow',
-				// credentials: 'same-origin',
 			},
 		};
 
 		return this.request(request);
 	}
 
-	async getWordDetailsHtml({ wordId }: { wordId: string }) {
+	async getWordDetailsHtml(wordId: string) {
 		const path = urljoin('worddetails/unif', wordId);
-
-		const request: Request = {
-			path,
-			options: {
-				method: 'GET',
-			},
-		};
-
-		return this.request(request);
-	}
-
-	async getTableHtml({ paradigmId }: { paradigmId: string }) {
-		const path = urljoin('morpho/lite', paradigmId, 'est');
 
 		const request: Request = {
 			path,

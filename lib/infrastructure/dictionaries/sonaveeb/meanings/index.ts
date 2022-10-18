@@ -1,22 +1,19 @@
-import { Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { Meaning } from '@lib/domain/dictionary-entry';
 
-const evaluateMeaning = (element: Element) => {
-	const tagElement = element.querySelector('[class*="definition-row"] [class*="tag"]');
+const evaluateMeaning = (meaningElement: HTMLElement) => {
+	const partofSpeech = meaningElement.querySelector('[class*="definition-row"] [class*="tag"]')?.textContent ?? '';
 
-	const partofSpeech = tagElement?.textContent ?? '';
+	const definition =
+		meaningElement.querySelector('[class*="definition-row"] [class*="definition-value"]')?.textContent ?? '';
 
-	const definitionElement = element.querySelector('[class*="definition-row"] [class*="definition-value"]');
+	const synonyms = meaningElement
+		.querySelectorAll('[class*="synonyms"] [class="synonym"]')
+		.map((element: HTMLElement) => element?.textContent?.trim() ?? '');
 
-	const definition = definitionElement?.textContent ?? '';
-
-	const synonymsElements = element.querySelectorAll('[class*="synonyms"] [class="synonym"]');
-
-	const synonyms = [...synonymsElements].map((element: Element) => element?.textContent?.trim() ?? '');
-
-	const exampleElements = element.querySelectorAll('[class*="example-text-value"] ');
-
-	const examples = [...exampleElements].map((element: Element) => element?.textContent?.trim() ?? '');
+	const examples = meaningElement
+		.querySelectorAll('[class*="example-text-value"] ')
+		.map((element: HTMLElement) => element?.textContent?.trim() ?? '');
 
 	const meaning: Meaning = {
 		definition,
@@ -28,11 +25,12 @@ const evaluateMeaning = (element: Element) => {
 	return meaning;
 };
 
-export const parseMeanings = async (page: Page): Promise<Meaning[]> => {
-	const meaningType = "[id^='lexeme-section-']";
-	const meaningSections = await page.$$(meaningType);
+export const parseMeanings = async (root: HTMLElement): Promise<Meaning[]> => {
+	const meaningSections = root.querySelectorAll("[id^='lexeme-section-']");
 
-	const meanings = await Promise.all(meaningSections.map((meaning) => page.evaluate(evaluateMeaning, meaning)));
+	const meanings = await Promise.all(
+		meaningSections.map((meaningElement: HTMLElement) => evaluateMeaning(meaningElement))
+	);
 
 	return meanings;
 };

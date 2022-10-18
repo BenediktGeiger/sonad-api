@@ -1,8 +1,8 @@
-import { ElementHandle, Page } from 'puppeteer';
 import { WordForm } from '@lib/domain/dictionary-entry';
+import { HTMLElement } from 'node-html-parser';
 
 export interface WordFormStrategy {
-	getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<WordForm | void>;
+	getWordForms(tableElement: HTMLElement, partOfSpeech: string): Promise<WordForm | void>;
 }
 
 export default class WordFormsFinder {
@@ -12,15 +12,15 @@ export default class WordFormsFinder {
 		this.strategies = strategies;
 	}
 	// make return type dicrimanory union
-	async findWordForms(partOfSpeech: string, page: Page): Promise<WordForm | Record<string, never>> {
-		const wordFormsTable = await page.$("[class*='morphology-paradigm'] table");
+	async findWordForms(partOfSpeech: string, root: HTMLElement): Promise<WordForm | Record<string, never>> {
+		const wordFormsTableElement = root.querySelector("[class*='morphology-paradigm'] table");
 
-		if (!wordFormsTable) {
+		if (!wordFormsTableElement) {
 			return {};
 		}
 
 		for (let i = 0; i < this.strategies.length; i++) {
-			const forms = await this.strategies[i].getWordForms(page, wordFormsTable, partOfSpeech);
+			const forms = await this.strategies[i].getWordForms(wordFormsTableElement, partOfSpeech);
 
 			if (forms) {
 				return forms;

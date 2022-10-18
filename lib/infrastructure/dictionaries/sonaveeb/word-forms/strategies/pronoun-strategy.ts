@@ -1,21 +1,21 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { PronounForm } from '@lib/domain/dictionary-entry';
 
 export default class PronounStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<PronounForm | void> {
+	async getWordForms(tableElement: HTMLElement, partOfSpeech: string): Promise<PronounForm | void> {
 		if (partOfSpeech !== 'asesõna') {
 			return;
 		}
 
-		return page.evaluate(this.evaluatePronounTable, tableHandle);
+		return this.evaluatePronounTable(tableElement);
 	}
 
-	private evaluatePronounTable(table: Element) {
+	private evaluatePronounTable(table: HTMLElement) {
 		const tableCellElements = table.querySelectorAll('td');
 
 		const tableCellValues = [...tableCellElements]
-			.map((tableCell: Element) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
+			.map((tableCell: HTMLElement) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
 			.filter((value) => value);
 
 		return {

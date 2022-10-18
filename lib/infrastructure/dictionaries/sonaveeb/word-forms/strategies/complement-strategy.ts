@@ -1,19 +1,19 @@
-import { ElementHandle, Page } from 'puppeteer';
+import { HTMLElement } from 'node-html-parser';
 import { WordFormStrategy } from '@lib/infrastructure/dictionaries/sonaveeb/word-forms';
 import { ComplementForm } from '@lib/domain/dictionary-entry';
 
 export default class ComplementStrategy implements WordFormStrategy {
-	async getWordForms(page: Page, tableHandle: ElementHandle, partOfSpeech: string): Promise<ComplementForm | void> {
+	async getWordForms(tableElement: HTMLElement, partOfSpeech: string): Promise<ComplementForm | void> {
 		if (partOfSpeech === 'täiendsõna') {
-			return page.evaluate(this.evaluateComplementTable, tableHandle);
+			return this.evaluateComplementTable(tableElement);
 		}
 	}
 
-	private evaluateComplementTable(table: Element) {
+	private evaluateComplementTable(table: HTMLElement) {
 		const tableCellElements = table.querySelectorAll('td');
 
 		const tableCellValues = [...tableCellElements]
-			.map((tableCell: Element) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
+			.map((tableCell: HTMLElement) => tableCell?.textContent?.replace(/\s/g, '') ?? '')
 			.filter((value) => value);
 
 		return {
