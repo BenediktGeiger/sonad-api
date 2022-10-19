@@ -21,7 +21,7 @@ export default class VerbStrategy implements WordFormStrategy {
 		return {
 			'ma-form': tableCellValues[0],
 			'da-form': tableCellValues[2],
-			'3-person-present-singular ': tableCellValues[4],
+			'3-person-present-singular': tableCellValues[4],
 			'3-person-past-singular': tableCellValues[1],
 			'nud-form': tableCellValues[3],
 			'tud-form': tableCellValues[6],

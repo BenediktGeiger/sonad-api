@@ -93,7 +93,7 @@ export type UnknownForm = {
 export type VerbForm = {
 	'ma-form': string;
 	'da-form': string;
-	'3-person-present-singular ': string;
+	'3-person-present-singular': string;
 	'3-person-past-singular': string;
 	'nud-form': string;
 	'tud-form': string;
