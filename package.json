@@ -11,6 +11,7 @@
     "start": "NODE_ENV=production node dist/index.js",
     "debug": "concurrently \"npx tsc --watch\" \"nodemon --inspect=1900 -q dist/index.js\"",
     "lint": "eslint ./lib --ext .ts",
+    "graph": "npx depcruise lib --include-only '^lib' -x '^(lib/config|lib/shared)' --config --output-type dot | dot -T svg > dependency-graph.svg",
     "prettier-format": "prettier --config .prettierrc 'lib/**/*.ts' --write"
   },
   "files": [
@@ -55,6 +56,7 @@
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "concurrently": "^7.2.2",
+    "dependency-cruiser": "^11.17.0",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",

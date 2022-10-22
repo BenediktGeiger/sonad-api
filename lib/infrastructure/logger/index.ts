@@ -1,7 +1,7 @@
 import ConsoleLogger from '@lib/infrastructure/logger/consoleLogger/console-logger';
 import WinstonLogger from '@lib/infrastructure/logger/winstonLogger/winston-logger';
 
-import LoggerInterface from '@lib/domain/logger/logger-interface';
+import LoggerInterface from '@lib/application/ports/logger.interface';
 
 export default {
 	getLogger(): LoggerInterface {

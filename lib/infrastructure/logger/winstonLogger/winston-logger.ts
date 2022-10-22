@@ -1,9 +1,9 @@
-import LoggerInterface from '@lib/domain/logger/logger-interface';
+import LoggerInterface from '@lib/application/ports/logger.interface';
 import winston from 'winston';
 const { combine, timestamp, json } = winston.format;
 
 const logger = winston.createLogger({
-	level: process.env.LOG_LEVEL || 'info',
+	level: 'info',
 	format: combine(timestamp(), json()),
 	transports: [new winston.transports.Console()],
 });

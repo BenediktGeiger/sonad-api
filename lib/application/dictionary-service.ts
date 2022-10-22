@@ -1,12 +1,12 @@
-import Dictionary from '@lib/domain/dictionary';
-import DictionaryCache from '@lib/domain/cache-repository';
+import Dictionary from '@lib/application/ports/dictionary';
+import DictionaryCache from '@lib/application/ports/dictionary-cache.interface';
 import { IDictionaryEntry, DictionaryEntry } from '@lib/domain/dictionary-entry';
 
-import { DictionaryResult, DictionaryResponse } from '@lib/domain/dictionary';
-import Logger from '@lib/domain/logger/logger-interface';
+import { DictionaryResult, DictionaryResponse } from '@lib/application/ports/dictionary';
+import Logger from '@lib/application/ports/logger.interface';
 import { partOfSpeechesTag, WordForm, Meaning } from '@lib/domain/dictionary-entry';
 
-import { Either, left, right } from '@lib/common/either';
+import { Either, left, right } from '@lib/shared/common/either';
 
 type ApplicationError = {
 	message: string;
@@ -53,15 +53,7 @@ export default class DictionaryService {
 	private logger: Logger;
 	private dictionaryCache: DictionaryCache;
 
-	constructor({
-		dictionary,
-		logger,
-		dictionaryCache,
-	}: {
-		dictionary: Dictionary;
-		dictionaryCache: DictionaryCache;
-		logger: Logger;
-	}) {
+	constructor(dictionary: Dictionary, dictionaryCache: DictionaryCache, logger: Logger) {
 		this.dictionary = dictionary;
 		this.logger = logger;
 		this.dictionaryCache = dictionaryCache;

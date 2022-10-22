@@ -5,7 +5,11 @@ export type partOfSpeechesTag =
 	| 'määrsõna'
 	| 'eessõna'
 	| 'tagasõna'
-	| 'täiendsõna';
+	| 'täiendsõna'
+	| 'omadussõna'
+	| 'asesõna'
+	| 'arvsõna'
+	| 'hüüdsõna';
 
 export type Meaning = {
 	definition: string;

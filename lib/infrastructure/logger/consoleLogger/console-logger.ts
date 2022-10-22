@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import LoggerInterface from '@lib/domain/logger/logger-interface';
+import LoggerInterface from '@lib/application/ports/logger.interface';
 
 export default class ConsoleLogger implements LoggerInterface {
 	info(payload: { message: string; method: string }): void {
