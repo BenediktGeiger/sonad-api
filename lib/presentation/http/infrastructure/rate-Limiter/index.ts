@@ -4,10 +4,16 @@ import RateLimiterInterface from '@lib/presentation/http/core/ports/rate-limiter
 import Redis from 'ioredis';
 
 export default {
-	getRateLimiter(redisClient: Redis): RateLimiterInterface {
-		if (redisClient) {
-			return new RedisRateLimiter(redisClient);
+	getRateLimiter(): RateLimiterInterface {
+		if (process.env.REDIS) {
+			try {
+				const redisClient = new Redis(String(process.env.REDIS));
+				return new RedisRateLimiter(redisClient);
+			} catch (err) {
+				return new InMemoryRateLimiter();
+			}
 		}
+
 		return new InMemoryRateLimiter();
 	},
 };
