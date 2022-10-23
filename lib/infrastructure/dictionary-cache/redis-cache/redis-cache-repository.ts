@@ -11,7 +11,11 @@ export default class RedisDictionaryCache implements DictionaryCache {
 		return await this.redisClient.get(key);
 	}
 
-	async set(key: string, value: string) {
-		await this.redisClient.set(key, value, 'EX', 3600);
+	async set(key: string, value: string, ttlInSeconds: number) {
+		if (ttlInSeconds) {
+			return await this.redisClient.set(key, value, 'EX', ttlInSeconds);
+		}
+
+		return await this.redisClient.set(key, value);
 	}
 }
