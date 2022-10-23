@@ -346,73 +346,73 @@ module.exports = {
            for details and some examples. If you don't specify a theme
            don't worry - dependency-cruiser will fall back to the default one.
         */
-        // theme: {
-        //   graph: {
-        //     /* use splines: "ortho" for straight lines. Be aware though
-        //       graphviz might take a long time calculating ortho(gonal)
-        //       routings.
-        //    */
-        //     splines: "true"
-        //   },
-        //   modules: [
-        //     {
-        //       criteria: { matchesFocus: true },
-        //       attributes: {
-        //         fillcolor: "lime",
-        //         penwidth: 2,
-        //       },
-        //     },
-        //     {
-        //       criteria: { matchesFocus: false },
-        //       attributes: {
-        //         fillcolor: "lightgrey",
-        //       },
-        //     },
-        //     {
-        //       criteria: { matchesReaches: true },
-        //       attributes: {
-        //         fillcolor: "lime",
-        //         penwidth: 2,
-        //       },
-        //     },
-        //     {
-        //       criteria: { matchesReaches: false },
-        //       attributes: {
-        //         fillcolor: "lightgrey",
-        //       },
-        //     },
-        //     {
-        //       criteria: { source: "^src/model" },
-        //       attributes: { fillcolor: "#ccccff" }
-        //     },
-        //     {
-        //       criteria: { source: "^src/view" },
-        //       attributes: { fillcolor: "#ccffcc" }
-        //     },
-        //   ],
-        //   dependencies: [
-        //     {
-        //       criteria: { "rules[0].severity": "error" },
-        //       attributes: { fontcolor: "red", color: "red" }
-        //     },
-        //     {
-        //       criteria: { "rules[0].severity": "warn" },
-        //       attributes: { fontcolor: "orange", color: "orange" }
-        //     },
-        //     {
-        //       criteria: { "rules[0].severity": "info" },
-        //       attributes: { fontcolor: "blue", color: "blue" }
-        //     },
-        //     {
-        //       criteria: { resolved: "^src/model" },
-        //       attributes: { color: "#0000ff77" }
-        //     },
-        //     {
-        //       criteria: { resolved: "^src/view" },
-        //       attributes: { color: "#00770077" }
-        //     }
-        //   ]
-        // }
+        theme: {
+          graph: {
+            /* use splines: "ortho" for straight lines. Be aware though
+              graphviz might take a long time calculating ortho(gonal)
+              routings.
+           */
+            splines: "ortho",
+          },
+          modules: [
+            {
+              criteria: { matchesFocus: true },
+              attributes: {
+                fillcolor: "lime",
+                penwidth: 2,
+              },
+            },
+            {
+              criteria: { matchesFocus: false },
+              attributes: {
+                fillcolor: "lightgrey",
+              },
+            },
+            {
+              criteria: { matchesReaches: true },
+              attributes: {
+                fillcolor: "lime",
+                penwidth: 2,
+              },
+            },
+            {
+              criteria: { matchesReaches: false },
+              attributes: {
+                fillcolor: "lightgrey",
+              },
+            },
+            {
+              criteria: { source: "^src/model" },
+              attributes: { fillcolor: "#ccccff" }
+            },
+            {
+              criteria: { source: "^src/view" },
+              attributes: { fillcolor: "#ccffcc" }
+            },
+          ],
+          dependencies: [
+            {
+              criteria: { "rules[0].severity": "error" },
+              attributes: { fontcolor: "red", color: "red" }
+            },
+            {
+              criteria: { "rules[0].severity": "warn" },
+              attributes: { fontcolor: "orange", color: "orange" }
+            },
+            {
+              criteria: { "rules[0].severity": "info" },
+              attributes: { fontcolor: "blue", color: "blue" }
+            },
+            {
+              criteria: { resolved: "^src/model" },
+              attributes: { color: "#0000ff77" }
+            },
+            {
+              criteria: { resolved: "^src/view" },
+              attributes: { color: "#00770077" }
+            }
+          ]
+        }
       },
       archi: {
         /* pattern of modules that can be consolidated in the high level

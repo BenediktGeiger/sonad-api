@@ -12,6 +12,7 @@
     "debug": "concurrently \"npx tsc --watch\" \"nodemon --inspect=1900 -q dist/index.js\"",
     "lint": "eslint ./lib --ext .ts",
     "graph": "npx depcruise lib --include-only '^lib' -x '^(lib/config|lib/shared)' --config --output-type dot | dot -T svg > dependency-graph.svg",
+    "graph:html": "npx depcruise lib --include-only '^lib' -x '^(lib/config|lib/shared)' --config --output-type dot | dot -T svg | depcruise-wrap-stream-in-html > dependency-graph.html",
     "prettier-format": "prettier --config .prettierrc 'lib/**/*.ts' --write"
   },
   "files": [
