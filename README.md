@@ -10,7 +10,7 @@
 
 I am software developer based in Tallinn Estonia. While learning the estonian language I figured that there is no publicly available API for the language dictionary itself. The Estonian Language Institute provides a language portal called [Sonaveeb](https://sonaveeb.ee/) but no way to programmatically access the dictionary content.
 
-[SONAPI](https://www.sonapi.ee/) is my side project and an API wrapper around to stay fit and get a deeper understanding of NodeJS, Typescript, design patterns and architectural concepts. This project is built with my interpretation of an API in a [Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/) context. (Also called Ports & Adapters Architecture).
+[SONAPI](https://www.sonapi.ee/) is an API wrapper around [www.sonaveeb.ee](https://www.sonaveeb.ee/) and my side project to stay fit and get a deeper understanding of NodeJS, Typescript, design patterns and architectural concepts. This project is built with my interpretation of an API in a [Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/) context. (Also called Ports & Adapters Architecture).
 
 You can find a live example on https://www.sonapi.ee/ or just simply call [https://api.sonapi.ee/v1/{word}](https://api.sonapi.ee/v1/tubli) with whatever tool you like
 
