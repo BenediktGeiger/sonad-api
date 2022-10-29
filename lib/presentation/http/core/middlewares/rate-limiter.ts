@@ -3,10 +3,10 @@ import requestIp from 'request-ip';
 
 import { CustomError } from '@lib/presentation/http/core/middlewares/error-handler';
 
-const isWhiteListed = (clientIP: string): boolean => {
-	const whiteListedIPs = String(process?.env?.IP_WHITELIST).split(',');
+const isWhiteListed = (origin: string): boolean => {
+	const whiteListedDomains = String(process?.env?.WHITELIST).split(',');
 
-	if (whiteListedIPs.includes(clientIP)) {
+	if (whiteListedDomains.includes(origin)) {
 		return true;
 	}
 
@@ -18,16 +18,16 @@ const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
 	const minute = new Date().getMinutes();
 
 	const key = `${clientIP}:${minute}`;
-	const origin = req.get('origin');
+	const origin = req.get('origin') ?? '';
 
 	req.logger.info({
 		message: `Request of ${clientIP} : ${origin}`,
 		method: 'rateLimiter',
 	});
 
-	if (isWhiteListed(clientIP)) {
+	if (isWhiteListed(origin)) {
 		req.logger.info({
-			message: `${clientIP} is whitelisted`,
+			message: `${origin} is whitelisted`,
 			method: 'rateLimiter',
 		});
 		return next();
