@@ -25,7 +25,7 @@ export default class DictionaryController {
 			return next(new CustomError('Something went wrong', 500));
 		}
 
-		await req.cache.set(req.originalUrl, JSON.stringify(result.payload), 300);
+		await this.setCache(req, result.payload);
 
 		res.json(result.payload);
 	};
@@ -42,7 +42,7 @@ export default class DictionaryController {
 			return next(new CustomError('Something went wrong', 500));
 		}
 
-		await req.cache.set(req.originalUrl, JSON.stringify(result.payload), 300);
+		await this.setCache(req, result.payload);
 
 		return res.json(result.payload);
 	};
@@ -59,7 +59,7 @@ export default class DictionaryController {
 			return next(new CustomError('Something went wrong', 500));
 		}
 
-		await req.cache.set(req.originalUrl, JSON.stringify(result.payload), 300);
+		await this.setCache(req, result.payload);
 
 		return res.json(result.payload);
 	};
@@ -76,8 +76,14 @@ export default class DictionaryController {
 			return next(new CustomError('Something went wrong', 500));
 		}
 
-		await req.cache.set(req.originalUrl, JSON.stringify(result.payload), 300);
+		await this.setCache(req, result.payload);
 
 		return res.json(result.payload);
 	};
+
+	private async setCache(req: Request, payload: object) {
+		const httpCacheTtl = process?.env?.HTTP_CACHE_TTL ?? 60;
+
+		return req.cache.set(req.originalUrl, JSON.stringify(payload), Number(httpCacheTtl));
+	}
 }
