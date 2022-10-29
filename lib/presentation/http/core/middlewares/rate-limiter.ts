@@ -14,19 +14,32 @@ const isWhiteListed = (clientIP: string): boolean => {
 };
 
 const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
-	const clientIP = requestIp.getClientIp(req);
+	const clientIP = String(requestIp.getClientIp(req));
 	const minute = new Date().getMinutes();
 
 	const key = `${clientIP}:${minute}`;
 
-	if (isWhiteListed(String(clientIP))) {
+	req.logger.info({
+		message: `Request of ${clientIP}`,
+		method: 'rateLimiter',
+	});
+
+	if (isWhiteListed(clientIP)) {
+		req.logger.info({
+			message: `${clientIP} is whitelisted`,
+			method: 'rateLimiter',
+		});
 		return next();
 	}
 
 	const hasReachedRateLimit = await req.rateLimiter.hasReachedRateLimit(key);
 
 	if (hasReachedRateLimit) {
-		next(new CustomError('Too many reqeusts', 429));
+		req.logger.info({
+			message: `${clientIP} has reached limit`,
+			method: 'rateLimiter',
+		});
+		return next(new CustomError('Too many reqeusts', 429));
 	}
 
 	req.rateLimiter.incr(key);
