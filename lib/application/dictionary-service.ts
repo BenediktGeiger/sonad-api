@@ -184,7 +184,13 @@ export default class DictionaryService {
 
 		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
 
-		if (dictionaryResponse.isRight()) {
+		if (dictionaryResponse.isLeft()) {
+			return dictionaryResponse;
+		}
+
+		const dictionaryEntry = dictionaryResponse.payload;
+
+		if (dictionaryResponse.isRight() && this.dictionaryEntryExists(dictionaryEntry)) {
 			await this.dictionaryCache.set(word, JSON.stringify(dictionaryResponse.payload));
 		}
 
