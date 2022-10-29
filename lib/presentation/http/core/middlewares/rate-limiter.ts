@@ -18,9 +18,10 @@ const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
 	const minute = new Date().getMinutes();
 
 	const key = `${clientIP}:${minute}`;
+	const origin = req.get('origin');
 
 	req.logger.info({
-		message: `Request of ${clientIP}`,
+		message: `Request of ${clientIP} : ${origin}`,
 		method: 'rateLimiter',
 	});
 
