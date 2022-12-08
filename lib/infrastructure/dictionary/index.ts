@@ -1,5 +1,5 @@
 import DictionaryInMemory from '@lib/infrastructure/dictionary/inMemory/dictionary-in-memory';
-import Dictionary from '@lib/application/ports/dictionary';
+import ExternalDictionary from '@lib/application/ports/external-dictionary.interface';
 import Logger from '@lib/application/ports/logger.interface';
 import DictionarySonaVeeb from '@lib/infrastructure/dictionary/sonaveeb/dictonary-sonaveeb';
 import WordFormsFinder from '@lib/infrastructure/dictionary/sonaveeb/word-forms';
@@ -19,7 +19,7 @@ import {
 import SonaVeebClient from '@lib/infrastructure/dictionary/sonaveeb/api-client';
 
 export default {
-	async getDictionary(logger: Logger): Promise<Dictionary> {
+	async getDictionary(logger: Logger): Promise<ExternalDictionary> {
 		if (process.env.DICTIONARY === 'sonaveeb') {
 			const wordFormFinder = new WordFormsFinder([
 				new NounStrategy(),

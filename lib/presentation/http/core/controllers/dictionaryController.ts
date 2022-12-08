@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import DictionaryService from '@lib/application/dictionary-service.js';
+
+import { WordResponse } from '@lib/application/dictionary-service.js';
 import LoggerInterface from '@lib/application/ports/logger.interface';
-import { asyncStopWatch } from '@lib/shared/common/stop-watch';
 import { CustomError } from '@lib/presentation/http/core/middlewares/error-handler';
 
 export default class DictionaryController {
@@ -14,12 +15,9 @@ export default class DictionaryController {
 	}
 
 	getWord = () => async (req: Request, res: Response, next: NextFunction) => {
-		const word = req?.params?.word;
+		const requestedWord = req?.params?.word;
 
-		const result = await asyncStopWatch(
-			this.dictionaryService.getWord.bind(this.dictionaryService),
-			this.logger
-		)(word);
+		const result: WordResponse = await this.dictionaryService.getWord(requestedWord);
 
 		if (result.isLeft()) {
 			return next(new CustomError('Something went wrong', 500));
@@ -31,12 +29,9 @@ export default class DictionaryController {
 	};
 
 	getPartOfSpeech = () => async (req: Request, res: Response, next: NextFunction) => {
-		const word = req?.params?.word;
+		const requestedWord = req?.params?.word;
 
-		const result = await asyncStopWatch(
-			this.dictionaryService.getPartOfSpeech.bind(this.dictionaryService),
-			this.logger
-		)(word);
+		const result: WordResponse = await this.dictionaryService.getWord(requestedWord);
 
 		if (result.isLeft()) {
 			return next(new CustomError('Something went wrong', 500));
@@ -44,16 +39,15 @@ export default class DictionaryController {
 
 		await this.setCache(req, result.payload);
 
-		return res.json(result.payload);
+		const { word, partOfSpeech } = result.payload;
+
+		return res.json({ word, partOfSpeech });
 	};
 
 	getWordForms = () => async (req: Request, res: Response, next: NextFunction) => {
-		const word = req?.params?.word;
+		const requestedWord = req?.params?.word;
 
-		const result = await asyncStopWatch(
-			this.dictionaryService.getWordForms.bind(this.dictionaryService),
-			this.logger
-		)(word);
+		const result: WordResponse = await this.dictionaryService.getWord(requestedWord);
 
 		if (result.isLeft()) {
 			return next(new CustomError('Something went wrong', 500));
@@ -61,16 +55,15 @@ export default class DictionaryController {
 
 		await this.setCache(req, result.payload);
 
-		return res.json(result.payload);
+		const { word, wordForms } = result.payload;
+
+		return res.json({ word, wordForms });
 	};
 
 	getMeanings = () => async (req: Request, res: Response, next: NextFunction) => {
-		const word = req?.params?.word;
+		const requestedWord = req?.params?.word;
 
-		const result = await asyncStopWatch(
-			this.dictionaryService.getMeanings.bind(this.dictionaryService),
-			this.logger
-		)(word);
+		const result: WordResponse = await this.dictionaryService.getWord(requestedWord);
 
 		if (result.isLeft()) {
 			return next(new CustomError('Something went wrong', 500));
@@ -78,7 +71,9 @@ export default class DictionaryController {
 
 		await this.setCache(req, result.payload);
 
-		return res.json(result.payload);
+		const { word, meanings } = result.payload;
+
+		return res.json({ word, meanings });
 	};
 
 	private async setCache(req: Request, payload: object) {

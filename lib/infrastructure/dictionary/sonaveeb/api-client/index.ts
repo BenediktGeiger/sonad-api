@@ -26,7 +26,7 @@ export default class SonaVeebClient {
 		try {
 			const response = await fetch(url, request.options);
 			if (!response?.ok) {
-				throw new Error('Unable to reach sonavee.ee');
+				throw new Error('Unable to reach sonaveeb.ee');
 			}
 
 			return await response.text();

@@ -18,6 +18,6 @@ export type DomainError = {
 
 export type DictionaryResponse = Either<DomainError, IDictionaryEntry>;
 
-export default interface Dictionary {
+export default interface ExternalDictionary {
 	getWord(word: string): Promise<DictionaryResponse>;
 }

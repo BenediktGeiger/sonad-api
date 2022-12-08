@@ -1,8 +1,8 @@
-import Dictionary from '@lib/application/ports/dictionary';
+import ExternalDictionary from '@lib/application/ports/external-dictionary.interface';
 import DictionaryCache from '@lib/application/ports/dictionary-cache.interface';
 import { IDictionaryEntry, DictionaryEntry } from '@lib/domain/dictionary-entry';
 
-import { DictionaryResult, DictionaryResponse } from '@lib/application/ports/dictionary';
+import { DictionaryResponse } from '@lib/application/ports/external-dictionary.interface';
 import Logger from '@lib/application/ports/logger.interface';
 import { partOfSpeechesTag, WordForm, Meaning } from '@lib/domain/dictionary-entry';
 
@@ -25,36 +25,15 @@ type WordResult = {
 	additionalInfo?: string;
 };
 
-type PartOfSpeechResult = {
-	word: string;
-	partOfSpeech: partOfSpeechesTag[] | null;
-	additionalInfo?: string;
-};
-
-type WordFormsResult = {
-	word: string;
-	wordForms: WordForm | null;
-	additionalInfo?: string;
-};
-
-type MeaningsResult = {
-	word: string;
-	meanings: Meaning[] | null;
-	additionalInfo?: string;
-};
-
-type WordResponse = Either<ApplicationError | InvalidWord, WordResult>;
-type PartofSpeechResponse = Either<ApplicationError | InvalidWord, PartOfSpeechResult>;
-type WordFormsResponse = Either<ApplicationError | InvalidWord, WordFormsResult | DictionaryResult>;
-type MeaningsResponse = Either<ApplicationError | InvalidWord, MeaningsResult | DictionaryResult>;
+export type WordResponse = Either<ApplicationError | InvalidWord, WordResult>;
 
 export default class DictionaryService {
-	private dictionary: Dictionary;
+	private externalDictionary: ExternalDictionary;
 	private logger: Logger;
 	private dictionaryCache: DictionaryCache;
 
-	constructor(dictionary: Dictionary, dictionaryCache: DictionaryCache, logger: Logger) {
-		this.dictionary = dictionary;
+	constructor(externalDictionary: ExternalDictionary, dictionaryCache: DictionaryCache, logger: Logger) {
+		this.externalDictionary = externalDictionary;
 		this.logger = logger;
 		this.dictionaryCache = dictionaryCache;
 	}
@@ -89,90 +68,6 @@ export default class DictionaryService {
 		return right(result);
 	}
 
-	async getPartOfSpeech(word: string): Promise<PartofSpeechResponse> {
-		if (!word) {
-			return left(this.handleInValidWordError());
-		}
-
-		const dictionaryResponse: DictionaryResponse = await this.getDictionaryEntry(word);
-
-		if (dictionaryResponse.isLeft()) {
-			return left(this.handleApplicationError());
-		}
-
-		const dictionaryEntry = dictionaryResponse.payload;
-
-		const result: PartOfSpeechResult = {
-			word: dictionaryEntry.getWord(),
-			partOfSpeech: dictionaryEntry.getPartOfSpeech(),
-		};
-
-		if (!this.dictionaryEntryExists(dictionaryEntry)) {
-			return right({
-				...result,
-				additionalInfo: `www.sonaveeb.ee has no matching result for ${word}`,
-			});
-		}
-
-		return right(result);
-	}
-
-	async getWordForms(word: string): Promise<WordFormsResponse> {
-		if (!word) {
-			return left(this.handleInValidWordError());
-		}
-
-		const dictionaryResponse: DictionaryResponse = await this.getDictionaryEntry(word);
-
-		if (dictionaryResponse.isLeft()) {
-			return left(this.handleApplicationError());
-		}
-
-		const dictionaryEntry = dictionaryResponse.payload;
-
-		const result: WordFormsResult = {
-			word: dictionaryEntry.getWord(),
-			wordForms: dictionaryEntry.getWordForms(),
-		};
-
-		if (!this.dictionaryEntryExists(dictionaryEntry)) {
-			return right({
-				...result,
-				additionalInfo: `www.sonaveeb.ee has no matching result for ${word}`,
-			});
-		}
-
-		return right(result);
-	}
-
-	async getMeanings(word: string): Promise<MeaningsResponse> {
-		if (!word) {
-			return left(this.handleInValidWordError());
-		}
-
-		const dictionaryResponse: DictionaryResponse = await this.getDictionaryEntry(word);
-
-		if (dictionaryResponse.isLeft()) {
-			return left(this.handleApplicationError());
-		}
-
-		const dictionaryEntry = dictionaryResponse.payload;
-
-		const result: MeaningsResult = {
-			word: dictionaryEntry.getWord(),
-			meanings: dictionaryEntry.getMeanings(),
-		};
-
-		if (!this.dictionaryEntryExists(dictionaryEntry)) {
-			return right({
-				...result,
-				additionalInfo: `www.sonaveeb.ee has no matching result for ${word}`,
-			});
-		}
-
-		return right(result);
-	}
-
 	private async getDictionaryEntry(word: string): Promise<DictionaryResponse> {
 		const cachedDictionaryEntry = await this.dictionaryCache.get(word);
 
@@ -182,7 +77,7 @@ export default class DictionaryService {
 			return right(dictionaryEntry);
 		}
 
-		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
+		const dictionaryResponse: DictionaryResponse = await this.externalDictionary.getWord(word);
 
 		if (dictionaryResponse.isLeft()) {
 			return dictionaryResponse;
