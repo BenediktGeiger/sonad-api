@@ -1,5 +1,5 @@
-import Dictionary from '@lib/application/ports/dictionary';
-import { DictionaryResponse } from '@lib/application/ports/dictionary';
+import ExternalDictionary from '@lib/application/ports/external-dictionary.interface';
+import { DictionaryResponse } from '@lib/application/ports/external-dictionary.interface';
 import { DictionaryEntry } from '@lib/domain/dictionary-entry';
 import LoggerInterface from '@lib/application/ports/logger.interface';
 import { right, left } from '@lib/shared/common/either';
@@ -11,7 +11,7 @@ import { parse } from 'node-html-parser';
 
 import SonaVeebClient from '@lib/infrastructure/dictionary/sonaveeb/api-client';
 
-export default class DictonarySonaveeb implements Dictionary {
+export default class DictonarySonaveeb implements ExternalDictionary {
 	private logger: LoggerInterface;
 	private wordFormsFinder: WordFormsFinder;
 	private sonaveebClient: SonaVeebClient;

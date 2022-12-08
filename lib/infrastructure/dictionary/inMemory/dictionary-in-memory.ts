@@ -1,9 +1,9 @@
-import Dictionary from '@lib/application/ports/dictionary';
-import { DictionaryResponse } from '@lib/application/ports/dictionary';
+import ExternalDictionary from '@lib/application/ports/external-dictionary.interface';
+import { DictionaryResponse } from '@lib/application/ports/external-dictionary.interface';
 import { DictionaryEntry, Meaning, partOfSpeechesTag } from '@lib/domain/dictionary-entry';
 import { right } from '@lib/shared/common/either';
 
-export default class DictionaryInMemory implements Dictionary {
+export default class DictionaryInMemory implements ExternalDictionary {
 	async getWord(word: string): Promise<DictionaryResponse> {
 		const partOfSpeechesTags: Array<partOfSpeechesTag> = ['omadussõna'];
 		const wordForms = {

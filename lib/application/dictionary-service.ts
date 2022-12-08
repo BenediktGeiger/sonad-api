@@ -1,8 +1,8 @@
-import Dictionary from '@lib/application/ports/dictionary';
+import ExternalDictionary from '@lib/application/ports/external-dictionary.interface';
 import DictionaryCache from '@lib/application/ports/dictionary-cache.interface';
 import { IDictionaryEntry, DictionaryEntry } from '@lib/domain/dictionary-entry';
 
-import { DictionaryResult, DictionaryResponse } from '@lib/application/ports/dictionary';
+import { DictionaryResult, DictionaryResponse } from '@lib/application/ports/external-dictionary.interface';
 import Logger from '@lib/application/ports/logger.interface';
 import { partOfSpeechesTag, WordForm, Meaning } from '@lib/domain/dictionary-entry';
 
@@ -49,12 +49,12 @@ type WordFormsResponse = Either<ApplicationError | InvalidWord, WordFormsResult 
 type MeaningsResponse = Either<ApplicationError | InvalidWord, MeaningsResult | DictionaryResult>;
 
 export default class DictionaryService {
-	private dictionary: Dictionary;
+	private externalDictionary: ExternalDictionary;
 	private logger: Logger;
 	private dictionaryCache: DictionaryCache;
 
-	constructor(dictionary: Dictionary, dictionaryCache: DictionaryCache, logger: Logger) {
-		this.dictionary = dictionary;
+	constructor(externalDictionary: ExternalDictionary, dictionaryCache: DictionaryCache, logger: Logger) {
+		this.externalDictionary = externalDictionary;
 		this.logger = logger;
 		this.dictionaryCache = dictionaryCache;
 	}
@@ -182,7 +182,7 @@ export default class DictionaryService {
 			return right(dictionaryEntry);
 		}
 
-		const dictionaryResponse: DictionaryResponse = await this.dictionary.getWord(word);
+		const dictionaryResponse: DictionaryResponse = await this.externalDictionary.getWord(word);
 
 		if (dictionaryResponse.isLeft()) {
 			return dictionaryResponse;

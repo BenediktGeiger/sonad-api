@@ -2,7 +2,7 @@ import DictionaryFactory from '@lib/infrastructure/dictionary/index';
 import RateLimiterFactory from '@lib/presentation/http/infrastructure/rate-Limiter/index';
 import DictionaryCacheFactory from '@lib/infrastructure/dictionary-cache/index';
 import LoggerFactory from '@lib/infrastructure/logger/index';
-import DictionaryInterface from '@lib/application/ports/dictionary';
+import DictionaryInterface from '@lib/application/ports/external-dictionary.interface';
 import DictionaryCacheInterface from '@lib/application/ports/dictionary-cache.interface';
 import LoggerInterface from '@lib/application/ports/logger.interface';
 import RateLimiterCacheInterface from '@lib/presentation/http/core/ports/rate-limiter.interface';
