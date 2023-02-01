@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.base.json",
+  "exclude": [
+    "../lib/application/",
+    "../lib/config/",
+    "../lib/domain/",
+    "../lib/infrastructure/",
+    "../lib/presentation/"
+  ],
+  "include": ["../tests", "../lib/shared"]
+}

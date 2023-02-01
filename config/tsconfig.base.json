@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    /* Language and Environment */
+    "target": "es2020",
+    "lib": ["es6", "DOM", "DOM.Iterable"],
+    "moduleDetection": "auto",
+    /* Modules */
+    "module": "CommonJS",
+    "sourceMap": true,
+    "outDir": "../dist",
+    "rootDir": "../lib", 
+    "baseUrl": "../lib",
+    "paths": {
+      "@lib/*": ["*"]
+    },
+
+    /* Interop Constraints */
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Type Checking */
+    "strict": true,
+    "skipLibCheck": true,
+  },
+}

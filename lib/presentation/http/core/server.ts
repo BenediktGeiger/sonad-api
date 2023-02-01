@@ -1,4 +1,5 @@
 import express from 'express';
+import { Express } from 'express';
 import { Services } from '@lib/config/service-locator';
 import router from '@lib/presentation/http/core/routes/router';
 
@@ -12,7 +13,7 @@ import {
 	metrics,
 } from '@lib/presentation/http/core/middlewares/index';
 
-const createServer = async (services: Services) => {
+const createServer = (services: Services): Express => {
 	const server = express();
 
 	server.disable('etag');
@@ -25,13 +26,7 @@ const createServer = async (services: Services) => {
 	router(server, services);
 	server.use(errorHandler);
 
-	const port = process.env.PORT ?? 8083;
-	server.listen(port, () => {
-		services.logger.info({
-			message: `Server running on port ${port}!`,
-			method: 'listen',
-		});
-	});
+	return server;
 };
 
 export default createServer;
