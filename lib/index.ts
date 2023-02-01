@@ -7,7 +7,15 @@ import dotenv from 'dotenv';
 	try {
 		dotenv.config();
 		const services = await buildServices();
-		createServer(services);
+		const server = createServer(services);
+
+		const port = process.env.PORT ?? 8083;
+		server.listen(port, () => {
+			services.logger.info({
+				message: `Server running on port ${port}!`,
+				method: 'listen',
+			});
+		});
 	} catch (err) {
 		/* eslint-disable no-console */
 		console.log(err);
