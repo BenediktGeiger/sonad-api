@@ -16,6 +16,19 @@ services:
     ports:
       - 8083:8083
     restart: "on-failure"
+  
+
+  postgres:
+    container_name: postgres_sonapi
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: benedikt
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+       - postgres-db:/data/postgres
+    ports:
+      - "5432:5432"
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -45,3 +58,7 @@ services:
     user: "1000"
     depends_on:
       - prometheus
+
+volumes:
+  postgres-db:
+    driver: local
