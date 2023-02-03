@@ -15,12 +15,17 @@ const Endpoints = Object.freeze({
 });
 
 export default (server: express.Express, services: Services) => {
-	const dictionaryController = new DictionaryController(services.dictionaryService, services.logger);
+	const dictionaryController = new DictionaryController(
+		services.dictionaryService,
+		services.translatorService,
+		services.logger
+	);
 
 	router.get(Endpoints.WORD, sanitizer, dictionaryController.getWord());
 	router.get(Endpoints.PART_OF_SPEECH, sanitizer, dictionaryController.getPartOfSpeech());
 	router.get(Endpoints.WORD_FORMS, sanitizer, dictionaryController.getWordForms());
 	router.get(Endpoints.MEANINGS, sanitizer, dictionaryController.getMeanings());
+
 	router.get('*', function (req, res) {
 		res.status(404).json({
 			message: 'Not found',
