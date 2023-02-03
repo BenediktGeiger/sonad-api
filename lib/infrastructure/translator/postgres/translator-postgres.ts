@@ -27,7 +27,8 @@ export default class TranslatorPostgres implements Translator {
 				return '';
 			}
 
-			return estonianWord;
+			return estonianWord?.trim()?.split(',')?.[0]?.split(';')?.[0]?.trim() ?? null;
+
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (error: any) {
 			this.logger.error({
