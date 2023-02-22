@@ -23,6 +23,7 @@ type WordResult = {
 	wordForms: WordForm;
 	meanings: Meaning[];
 	additionalInfo?: string;
+	status?: number;
 };
 
 export type WordResponse = Either<ApplicationError | InvalidWord, WordResult>;
@@ -62,6 +63,7 @@ export default class DictionaryService {
 			return right({
 				...result,
 				additionalInfo: `www.sonaveeb.ee has no matching result for ${word}`,
+				status: 400,
 			});
 		}
 

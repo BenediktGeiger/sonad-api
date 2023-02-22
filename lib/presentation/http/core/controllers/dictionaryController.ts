@@ -34,6 +34,10 @@ export default class DictionaryController {
 			return next(new CustomError('Something went wrong', 500));
 		}
 
+		if (result?.payload?.status === 400) {
+			return next(new CustomError(`${estonianWordResult.requestedWord} not found`, 400));
+		}
+
 		await this.setCache(req, result.payload);
 
 		res.json(result.payload);
@@ -54,6 +58,10 @@ export default class DictionaryController {
 
 		if (result.isLeft()) {
 			return next(new CustomError('Something went wrong', 500));
+		}
+
+		if (result?.payload?.status === 400) {
+			return next(new CustomError(`${estonianWordResult.requestedWord} not found`, 400));
 		}
 
 		await this.setCache(req, result.payload);
@@ -80,6 +88,10 @@ export default class DictionaryController {
 			return next(new CustomError('Something went wrong', 500));
 		}
 
+		if (result?.payload?.status === 400) {
+			return next(new CustomError(`${estonianWordResult.requestedWord} not found`, 400));
+		}
+
 		await this.setCache(req, result.payload);
 
 		const { word, wordForms, additionalInfo } = result.payload;
@@ -102,6 +114,10 @@ export default class DictionaryController {
 
 		if (result.isLeft()) {
 			return next(new CustomError('Something went wrong', 500));
+		}
+
+		if (result?.payload?.status === 400) {
+			return next(new CustomError(`${estonianWordResult.requestedWord} not found`, 400));
 		}
 
 		await this.setCache(req, result.payload);
