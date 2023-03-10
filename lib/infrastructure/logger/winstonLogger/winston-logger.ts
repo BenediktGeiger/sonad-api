@@ -1,6 +1,7 @@
 import LoggerInterface from '@lib/application/ports/logger.interface';
 import winston from 'winston';
 const { combine, timestamp, json } = winston.format;
+import { LogPayload } from '@lib/application/ports/logger.interface';
 
 const logger = winston.createLogger({
 	level: 'info',
@@ -9,28 +10,38 @@ const logger = winston.createLogger({
 });
 
 export default class WinstonLogger implements LoggerInterface {
-	info(payload: { message: string; method: string }): void {
+	info(payload: LogPayload): void {
+		const { message, method, ...rest } = payload;
 		logger.info({
-			message: payload.message,
-			method: payload.method,
+			message,
+			method,
+			...rest,
 		});
 	}
-	warning(payload: { message: string; method: string }): void {
+	warning(payload: LogPayload): void {
+		const { message, method, ...rest } = payload;
 		logger.warning({
-			message: payload.message,
-			method: payload.method,
+			message,
+			method,
+			...rest,
 		});
 	}
-	error(payload: { message: string; method: string }): void {
+	error(payload: LogPayload): void {
+		const { message, method, ...rest } = payload;
+
 		logger.error({
-			message: payload.message,
-			method: payload.method,
+			message,
+			method,
+			...rest,
 		});
 	}
-	critical(payload: { message: string; method: string }): void {
+	critical(payload: LogPayload): void {
+		const { message, method, ...rest } = payload;
+
 		logger.crit({
-			message: payload.message,
-			method: payload.method,
+			message,
+			method,
+			...rest,
 		});
 	}
 }

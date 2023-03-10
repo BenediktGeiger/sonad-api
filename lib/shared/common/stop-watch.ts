@@ -12,6 +12,9 @@ export const asyncStopWatch = <Func extends AsyncFunction>(func: Func, logger: L
 		logger.info({
 			message: `${func.name} execution time ${elapsedTime}ms`,
 			method: func?.name,
+			elapsedTime,
+			start,
+			end,
 		});
 		return result;
 	};
@@ -29,6 +32,9 @@ export const syncStopWatch = <Func extends SyncFunction>(func: Func, logger: Log
 		logger.info({
 			message: `${func.name} execution time ${elapsedTime}ms`,
 			method: func?.name,
+			elapsedTime,
+			start,
+			end,
 		});
 		return result;
 	};

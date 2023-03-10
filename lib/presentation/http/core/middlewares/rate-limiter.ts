@@ -23,12 +23,15 @@ const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
 	req.logger.info({
 		message: `Request of ${clientIP} : ${origin}`,
 		method: 'rateLimiter',
+		clientIp: clientIP,
+		origin,
 	});
 
 	if (isWhiteListed(origin)) {
 		req.logger.info({
 			message: `${origin} is whitelisted`,
 			method: 'rateLimiter',
+			origin,
 		});
 		return next();
 	}
@@ -39,6 +42,8 @@ const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
 		req.logger.info({
 			message: `${clientIP} has reached limit`,
 			method: 'rateLimiter',
+			clientIp: clientIP,
+			origin,
 		});
 		return next(new CustomError('Too many reqeusts', 429));
 	}

@@ -33,6 +33,10 @@ const metrics = (req: Request, res: Response, time: number) => {
 	req.logger.info({
 		message: `Response of ${method} ${protocol}://${hostname}${originalUrl} in ${time}ms with ${statusCode}`,
 		method: 'listen',
+		protocol,
+		hostname,
+		originalUrl,
+		statusCode,
 	});
 
 	const labels = {

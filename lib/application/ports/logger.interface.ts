@@ -1,6 +1,7 @@
-type LogPayload = {
+export type LogPayload = {
 	message: string;
 	method: string;
+	[x: string | number | symbol]: unknown;
 };
 
 export default interface Logger {
