@@ -43,7 +43,7 @@ export default class TranslatorSqlite implements Translator {
 
 	private async readDbPromise(query: string, params: string[]): Promise<string> {
 		return new Promise((resolve, reject) => {
-			this.db.all(query, params, async (err, rows) => {
+			this.db.all(query, params, async (err, rows: { word_et: string }[]) => {
 				if (err) {
 					return reject(err);
 				}

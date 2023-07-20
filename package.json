@@ -34,6 +34,7 @@
     "@types/node-fetch": "^2.6.2",
     "@types/request-ip": "^0.0.37",
     "@types/url-join": "^4.0.1",
+	"@vanakaru/ekilex-api-client": "^0.0.12",
     "body-parser": "^1.20.0",
     "cli-table": "^0.3.11",
     "cors": "^2.8.5",

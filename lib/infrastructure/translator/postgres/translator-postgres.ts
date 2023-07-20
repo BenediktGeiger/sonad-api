@@ -17,6 +17,10 @@ export default class TranslatorPostgres implements Translator {
 		this.db = pool;
 	}
 
+	private removeSpecialCharacters(str: string): string {
+		return str.replace(/[(){}[\]]/g, '');
+	}
+
 	async translate(word: string): Promise<string | null> {
 		try {
 			const { rows } = await this.db.query('SELECT word_et FROM en_et WHERE word_en = $1', [word]);
@@ -26,6 +30,15 @@ export default class TranslatorPostgres implements Translator {
 			if (!estonianWord) {
 				return '';
 			}
+
+			return (
+				this.removeSpecialCharacters(estonianWord)
+					?.trim()
+					?.split(' ')?.[0]
+					.split(',')?.[0]
+					?.split(';')?.[0]
+					?.trim() ?? null
+			);
 
 			return estonianWord?.trim()?.split(',')?.[0]?.split(';')?.[0]?.trim() ?? null;
 

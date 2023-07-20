@@ -3,8 +3,11 @@ import DictionaryController from '@lib/presentation/http/core/controllers/dictio
 import { Services } from '@lib/config/service-locator';
 import { sanitizer } from '@lib/presentation/http/core/middlewares/index';
 import { register } from '@lib/presentation/http/core/prom';
+import DictionaryV2Controller from '../controllers/dictionaryV2Controller';
 
 const router = express.Router();
+
+const routerV2 = express.Router();
 
 const Endpoints = Object.freeze({
 	WORD: '/:word',
@@ -14,11 +17,21 @@ const Endpoints = Object.freeze({
 	METRICS: '/metrics',
 });
 
+const EndpointsV2 = Object.freeze({
+	SEARCH: '/:searchTerm',
+});
+
 export default (server: express.Express, services: Services) => {
 	const dictionaryController = new DictionaryController(
 		services.dictionaryService,
 		services.translatorService,
 		services.logger
+	);
+
+	const dictionaryV2Controller = new DictionaryV2Controller(
+		services.logger,
+		services.dictionaryV2Service,
+		services.translatorService
 	);
 
 	router.get(Endpoints.WORD, sanitizer, dictionaryController.getWord());
@@ -33,10 +46,13 @@ export default (server: express.Express, services: Services) => {
 		});
 	});
 
+	routerV2.get(EndpointsV2.SEARCH, sanitizer, dictionaryV2Controller.searchWord());
+
 	server.use(Endpoints.METRICS, async function (req, res) {
 		res.setHeader('Content-type', register.contentType);
 		res.end(await register.metrics());
 	});
 
 	server.use('/v1', router);
+	server.use('/v2', routerV2);
 };
