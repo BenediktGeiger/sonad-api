@@ -11,6 +11,7 @@ import {
 	cacheHandler,
 	errorHandler,
 	metrics,
+	requestLogger,
 } from '@lib/presentation/http/core/middlewares/index';
 
 const createServer = (services: Services): Express => {
@@ -22,6 +23,7 @@ const createServer = (services: Services): Express => {
 	server.use(jsonParser);
 	server.use(bindServices(services));
 	server.use(rateLimiter);
+	server.use(requestLogger);
 	server.use(cacheHandler);
 	router(server, services);
 	server.use(errorHandler);

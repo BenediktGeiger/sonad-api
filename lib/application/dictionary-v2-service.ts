@@ -23,23 +23,37 @@ export default class DictionaryV2Service {
 	}
 
 	private async getDictionaryEntry(searchTerm: string): Promise<WordResponse> {
-		const cachedDictionaryEntry = await this.dictionaryCache.get(searchTerm);
+		const cacheKey = `${searchTerm}_v2`;
+		const cachedDictionaryEntry = await this.dictionaryCache.get(cacheKey);
 
 		if (cachedDictionaryEntry) {
 			this.logger.info({
 				message: `Cache hit with term:${searchTerm}`,
 				method: 'getDictionaryEntry',
 			});
+			try {
+				const dictionaryEntry = JSON.parse(cachedDictionaryEntry);
+				return dictionaryEntry;
+			} catch (error) {
+				this.logger.error({
+					message: `Unable to parse cache entry`,
+					method: 'getDictionaryEntry',
+				});
 
-			const dictionaryEntry = JSON.parse(cachedDictionaryEntry);
+				const result = await this.externalDictionary.getDictionaryEntry(searchTerm);
 
-			return dictionaryEntry;
+				if (result.length) {
+					this.dictionaryCache.set(cacheKey, JSON.stringify(result));
+				}
+
+				return result;
+			}
 		}
 
 		const result = await this.externalDictionary.getDictionaryEntry(searchTerm);
 
 		if (result.length) {
-			this.dictionaryCache.set(searchTerm, JSON.stringify(result));
+			this.dictionaryCache.set(cacheKey, JSON.stringify(result));
 		}
 
 		return result;

@@ -12,6 +12,8 @@ import DictionaryService from '@lib/application/dictionary-service';
 import TranslatorService from '@lib/application/translator-service';
 import DictionaryV2Service from '@lib/application/dictionary-v2-service';
 import ExternalDictionaryV2 from '@lib/application/ports/external-dictionary-v2.interface';
+import RequestLoggerFactory from '@lib/infrastructure/request-logger';
+import RequestLogger from '@lib/application/ports/request-logger.interface';
 
 export type Services = {
 	dictionaryService: DictionaryService;
@@ -22,12 +24,14 @@ export type Services = {
 	dictionaryCache: DictionaryCacheInterface;
 	logger: LoggerInterface;
 	rateLimiter: RateLimiterCacheInterface;
+	requestLogger: RequestLogger;
 };
 
 export async function buildServices(): Promise<Services> {
 	const logger = LoggerFactory.getLogger();
 	const dictionary = await DictionaryFactory.getDictionary(logger);
 	const dictionaryV2 = await DictionaryV2Factory.getDictionary(logger);
+	const requestLogger = await RequestLoggerFactory.getRequestLogger(logger);
 
 	const dictionaryCache = DictionaryCacheFactory.getDictionaryCache();
 	const translator = await TranslatorFactory.getTranslator(logger);
@@ -45,6 +49,7 @@ export async function buildServices(): Promise<Services> {
 		dictionaryCache,
 		logger,
 		rateLimiter: RateLimiterFactory.getRateLimiter(),
+		requestLogger,
 	};
 
 	return services;

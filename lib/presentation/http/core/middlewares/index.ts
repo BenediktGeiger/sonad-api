@@ -6,5 +6,16 @@ import jsonParser from '@lib/presentation/http/core/middlewares/json-parser';
 import cacheHandler from '@lib/presentation/http/core/middlewares/cache-handler';
 import metrics from '@lib/presentation/http/core/middlewares/metrics';
 import sanitizer from '@lib/presentation/http/core/middlewares/sanitizer';
+import requestLogger from '@lib/presentation/http/core/middlewares/request-logger';
 
-export { jsonParser, corsHandler, bindServices, rateLimiter, cacheHandler, errorHandler, metrics, sanitizer };
+export {
+	jsonParser,
+	corsHandler,
+	bindServices,
+	rateLimiter,
+	cacheHandler,
+	errorHandler,
+	metrics,
+	sanitizer,
+	requestLogger,
+};

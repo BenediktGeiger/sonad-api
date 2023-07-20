@@ -5,6 +5,7 @@ const bindServices = (services: Services) => (req: Request, res: Response, next:
 	req.rateLimiter = services.rateLimiter;
 	req.logger = services.logger;
 	req.cache = services.dictionaryCache;
+	req.requestLogger = services.requestLogger;
 	next();
 };
 
