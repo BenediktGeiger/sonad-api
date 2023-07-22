@@ -68,7 +68,7 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 			const wordDetails = await Promise.all(promises);
 
 			const result = wordDetails.map((wordDetail) => {
-				const partOfSpeeches = [...new Set(wordDetail.paradigms.map((paradigm) => paradigm.wordClass))];
+				const wordClasses = [...new Set(wordDetail.paradigms.map((paradigm) => paradigm.wordClass))];
 
 				const wordForms = wordDetail.paradigms.map(this.extractWordFormsFromParadigm).flat();
 
@@ -77,7 +77,7 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 					.map(this.extractFromLexeme);
 
 				return {
-					partOfSpeech: partOfSpeeches,
+					wordClasses,
 					wordForms,
 					meanings: rest,
 				};
