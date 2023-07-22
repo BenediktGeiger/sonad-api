@@ -42,7 +42,7 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 	private extractFromLexeme(lexeme: Lexeme) {
 		const definitions = lexeme.meaning.definitions.map((definition) => definition.value).join(',');
 
-		const usages = lexeme.usages.map((usage) => usage.value).join(',');
+		const usages = lexeme.usages.map((usage) => usage.value);
 
 		const synonymLangGroup = lexeme.synonymLangGroups.find((synonymLangGroup) => synonymLangGroup.lang === 'est');
 
