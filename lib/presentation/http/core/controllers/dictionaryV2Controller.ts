@@ -26,16 +26,71 @@ export default class DictionaryV2Controller {
 			return next(new CustomError(`No Translation found for ${estonianWordResult.requestedWord}`, 400));
 		}
 
+		const translations = await this.getTranslations(req);
+
 		try {
 			const result = await this.dictionaryService.getWord(estonianWordResult.estonianWord);
 			res.json({
 				...estonianWordResult,
 				searchResult: result,
+				translations: [translations],
 			});
 		} catch (err) {
 			return next(new CustomError('Something went wrong', 500));
 		}
 	};
+
+	private getTranslationDirection(lg?: any): { from: string; to: string } {
+		if (!lg || lg === 'et') {
+			return {
+				from: 'et',
+				to: 'en',
+			};
+		}
+
+		if (lg === 'en') {
+			return {
+				from: 'en',
+				to: 'et',
+			};
+		}
+
+		return {
+			from: 'et',
+			to: 'en',
+		};
+	}
+
+	private async getTranslations(req: Request): Promise<{
+		from: string;
+		to: string;
+		input: string;
+		translations: string[];
+	}> {
+		const requestedWord = req?.params?.searchTerm;
+
+		const { lg } = req.query;
+
+		const { from, to } = this.getTranslationDirection(lg);
+
+		const translations = await this.translatorService.getTranslations(requestedWord, from, to);
+
+		if (translations.isLeft()) {
+			return {
+				from,
+				to,
+				input: requestedWord,
+				translations: [],
+			};
+		}
+
+		return {
+			from,
+			to,
+			input: requestedWord,
+			translations: translations?.payload?.translations ?? [],
+		};
+	}
 
 	private async getEstonianWord(req: Request): Promise<{
 		requestedWord: string;

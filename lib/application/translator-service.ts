@@ -16,7 +16,14 @@ type TranslationResult = {
 	translatedWord: string;
 };
 
+type GetTranslationsResult = {
+	originalWord: string;
+	translations: string[];
+};
+
 export type TranslationResponse = Either<ApplicationError | InvalidWord, TranslationResult>;
+
+export type GetTranslationsResponse = Either<ApplicationError | InvalidWord, GetTranslationsResult>;
 
 export default class TranslatorService {
 	private translator: Translator;
@@ -41,6 +48,19 @@ export default class TranslatorService {
 		return right({
 			originalWord: word,
 			translatedWord,
+		});
+	}
+
+	async getTranslations(term: string, from: string, to: string): Promise<GetTranslationsResponse> {
+		if (!term) {
+			return left(this.handleInValidWordError());
+		}
+
+		const translations = await this.translator.getTranslations(term, from, to);
+
+		return right({
+			originalWord: term,
+			translations,
 		});
 	}
 
