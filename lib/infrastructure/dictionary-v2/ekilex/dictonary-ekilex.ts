@@ -105,10 +105,16 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 					.filter((lexeme) => lexeme.datasetCode === 'eki')
 					.map(this.extractFromLexeme);
 
+				const similarWords =
+					wordDetail?.wordRelationDetails?.primaryWordRelationGroups
+						.find((group) => group?.groupTypeLabel.toLowerCase() === 'veel sarnaseid sõnu')
+						?.members?.map((member) => member.wordValue) ?? [];
+
 				return {
 					wordClasses,
 					wordForms,
 					meanings: rest,
+					similarWords,
 				};
 			});
 
