@@ -92,7 +92,7 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 		try {
 			const wordIds = await this.getWordIds(searchTerm);
 
-			const promises = wordIds.map((wordId) => this.ekilexClient.words.getDetails(wordId));
+			const promises = wordIds.map((wordId) => this.ekilexClient.words.getDetails(wordId, ['eki']));
 
 			const wordDetails = await Promise.all(promises);
 
