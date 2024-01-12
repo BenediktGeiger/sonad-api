@@ -1,7 +1,7 @@
-import RateLimiterCache from '@lib/presentation/http/core/ports/rate-limiter.interface';
-import LoggerInterface from '@lib/application/ports/logger.interface';
-import CacheRepository from '@lib/application/ports/dictionary-cache.interface';
-import RequestLogger from '@lib/application/ports/request-logger.interface';
+import RateLimiterCache from '@lib/web-interface/http/core/ports/rate-limiter.interface';
+import LoggerInterface from '@lib/dictionary/application/ports/logger.interface';
+import CacheRepository from '@lib/dictionary/application/ports/dictionary-cache.interface';
+import RequestLogger from '@lib/dictionary/application/ports/request-logger.interface';
 
 declare global {
 	namespace Express {

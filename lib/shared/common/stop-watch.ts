@@ -1,4 +1,4 @@
-import LoggerInterface from '@lib/application/ports/logger.interface';
+import LoggerInterface from '@lib/dictionary/application/ports/logger.interface';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AsyncFunction = (...args: any[]) => Promise<any>;
