@@ -7,12 +7,10 @@ export default class RedisRateLimiter implements RateLimiterCache {
 	constructor(redisClient: Redis) {
 		this.redisClient = redisClient;
 	}
-	async hasReachedRateLimit(key: string): Promise<boolean> {
+	async hasReachedRateLimit(key: string, limit: 60): Promise<boolean> {
 		const amountOfRequests = await this.redisClient.get(key);
 
-		const rateLimit = process?.env?.RATE_LIMIT ?? 60;
-
-		return Boolean(Number(amountOfRequests) >= Number(rateLimit));
+		return Boolean(Number(amountOfRequests) >= Number(limit));
 	}
 
 	incr(key: string) {

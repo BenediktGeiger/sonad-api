@@ -10,8 +10,8 @@ export default class InMemoryRateLimiter implements RateLimiterCache {
 	constructor(inMemoryCounter: inMemoryCounter = {}) {
 		this.inMemoryCounter = inMemoryCounter;
 	}
-	async hasReachedRateLimit(key: string): Promise<boolean> {
-		return Boolean(this.inMemoryCounter[key] >= 100);
+	async hasReachedRateLimit(key: string, limit: 100): Promise<boolean> {
+		return Boolean(this.inMemoryCounter[key] >= limit);
 	}
 
 	incr(key: string) {

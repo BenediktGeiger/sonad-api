@@ -13,12 +13,22 @@ const isWhiteListed = (origin: string): boolean => {
 	return false;
 };
 
+const getRateLimit = (originalUrl: string): number | string => {
+	if (originalUrl.includes('v1/')) {
+		return process?.env?.RATE_LIMIT_V1 ?? 60;
+	}
+
+	return process?.env?.RATE_LIMIT_V2 ?? 60;
+};
+
 const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
 	const clientIP = String(requestIp.getClientIp(req));
 	const minute = new Date().getMinutes();
 
 	const key = `${clientIP}:${minute}`;
 	const origin = req.get('origin') ?? '';
+
+	const { originalUrl } = req;
 
 	req.logger.info({
 		message: `Request of ${clientIP} : ${origin}`,
@@ -36,7 +46,9 @@ const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
 		return next();
 	}
 
-	const hasReachedRateLimit = await req.rateLimiter.hasReachedRateLimit(key);
+	const rateLimit = Number(getRateLimit(originalUrl));
+
+	const hasReachedRateLimit = await req.rateLimiter.hasReachedRateLimit(key, rateLimit);
 
 	if (hasReachedRateLimit) {
 		req.logger.info({
@@ -45,7 +57,12 @@ const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
 			clientIp: clientIP,
 			origin,
 		});
-		return next(new CustomError('Too many reqeusts', 429));
+		return next(
+			new CustomError(
+				'Too many requests, please switch to api version v2. version v1 is heavily rate limited and will soon be shut down',
+				429
+			)
+		);
 	}
 
 	req.rateLimiter.incr(key);
