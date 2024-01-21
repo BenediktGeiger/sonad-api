@@ -49,6 +49,8 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 
 		const usages = lexeme.usages.map((usage) => usage.value);
 
+		const partOfSpeechTags = lexeme?.pos?.map((pos) => ({ code: pos.code, value: pos.value })) ?? [];
+
 		const synonymLangGroup = lexeme.synonymLangGroups.find((synonymLangGroup) => synonymLangGroup.lang === 'est');
 
 		const synonyms = synonymLangGroup
@@ -57,6 +59,7 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 
 		return {
 			definition: definitions,
+			partOfSpeech: partOfSpeechTags,
 			examples: usages,
 			synonyms,
 		};
