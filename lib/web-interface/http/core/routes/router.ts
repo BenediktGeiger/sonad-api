@@ -22,6 +22,7 @@ const Endpoints = Object.freeze({
 const EndpointsV2 = Object.freeze({
 	SEARCH: '/:searchTerm',
 	GET_LUCKY: '/getLucky',
+	ASCII: '/ascii/:searchTerm',
 });
 
 const StudiesEndpoints = Object.freeze({
@@ -62,6 +63,7 @@ export default (server: express.Express, services: Services) => {
 
 	routerV2.get(EndpointsV2.GET_LUCKY, sanitizer, dictionaryV2Controller.getLucky());
 	routerV2.get(EndpointsV2.SEARCH, sanitizer, dictionaryV2Controller.searchWord());
+	routerV2.get(EndpointsV2.ASCII, sanitizer, dictionaryV2Controller.ascii());
 
 	// studies
 	routerV2.post(StudiesEndpoints.STUDENTS, sanitizer, studiesController.createStudent());

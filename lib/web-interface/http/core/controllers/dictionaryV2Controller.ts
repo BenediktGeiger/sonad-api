@@ -3,19 +3,23 @@ import LoggerInterface from '@lib/dictionary/application/ports/logger.interface'
 import DictionaryService from '@lib/dictionary/application/dictionary-v2-service';
 import { CustomError } from '../middlewares/error-handler';
 import TranslatorService from '@lib/dictionary/application/translator-service';
+import { AsciiService } from '@lib/ascii/ascii-service';
+import { DictionaryResponse } from '@lib/ascii/types';
 
 export default class DictionaryV2Controller {
 	private logger: LoggerInterface;
 	private dictionaryService: DictionaryService;
 	private translatorService: TranslatorService;
+	private asciiService: AsciiService;
 
 	constructor(logger: LoggerInterface, dictionaryService: DictionaryService, translatorService: TranslatorService) {
 		this.dictionaryService = dictionaryService;
 		this.translatorService = translatorService;
 		this.logger = logger;
+		this.asciiService = new AsciiService(); // move to service factory
 	}
 
-	searchWord = () => async (req: Request, res: Response, next: NextFunction) => {
+	private getSearchResult = async (req: Request, next: NextFunction) => {
 		const estonianWordResult = await this.getEstonianWord(req);
 
 		if (!estonianWordResult) {
@@ -28,13 +32,34 @@ export default class DictionaryV2Controller {
 
 		const translations = await this.getTranslations(req);
 
+		const result = await this.dictionaryService.getWord(estonianWordResult.estonianWord);
+
+		return {
+			...estonianWordResult,
+			searchResult: result,
+			translations: [translations],
+		} as DictionaryResponse;
+	};
+
+	searchWord = () => async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const result = await this.dictionaryService.getWord(estonianWordResult.estonianWord);
-			res.json({
-				...estonianWordResult,
-				searchResult: result,
-				translations: [translations],
-			});
+			const result = await this.getSearchResult(req, next);
+			res.json(result);
+		} catch (err) {
+			return next(new CustomError('Something went wrong', 500));
+		}
+	};
+
+	ascii = () => async (req: Request, res: Response, next: NextFunction) => {
+		res.set('Content-Type', 'text/plain');
+		try {
+			const result = await this.getSearchResult(req, next);
+
+			if (!result || !result?.searchResult.length) {
+				res.send('no ascii for you!');
+			}
+			const ascii = this.asciiService.getAsciiResponse(result as DictionaryResponse);
+			res.send(ascii);
 		} catch (err) {
 			return next(new CustomError('Something went wrong', 500));
 		}
