@@ -51,14 +51,15 @@ export default class DictionaryV2Controller {
 	};
 
 	ascii = () => async (req: Request, res: Response, next: NextFunction) => {
-		res.set('Content-Type', 'text/plain');
 		try {
 			const result = await this.getSearchResult(req, next);
 
 			if (!result || !result?.searchResult.length) {
-				res.send('no ascii for you!');
+				res.send('no ascii for you!\n');
+				return;
 			}
 			const ascii = this.asciiService.getAsciiResponse(result as DictionaryResponse);
+			res.set('Content-Type', 'text/plain');
 			res.send(ascii);
 		} catch (err) {
 			return next(new CustomError('Something went wrong', 500));
