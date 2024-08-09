@@ -5,6 +5,7 @@ import TranslatorService from '@lib/dictionary/application/translator-service';
 import { WordResponse } from '@lib/dictionary/application/dictionary-service.js';
 import LoggerInterface from '@lib/dictionary/application/ports/logger.interface';
 import { CustomError } from '@lib/web-interface/http/core/middlewares/error-handler';
+import config from '@lib/global-config';
 
 export default class DictionaryController {
 	private dictionaryService: DictionaryService;
@@ -128,7 +129,7 @@ export default class DictionaryController {
 	};
 
 	private async setCache(req: Request, payload: object) {
-		const httpCacheTtl = process?.env?.HTTP_CACHE_TTL ?? 60;
+		const httpCacheTtl = config.cache.ttl;
 
 		return req.cache.set(req.originalUrl, JSON.stringify(payload), Number(httpCacheTtl));
 	}

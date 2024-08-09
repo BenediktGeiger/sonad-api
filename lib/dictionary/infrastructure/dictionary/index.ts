@@ -17,10 +17,11 @@ import {
 	DefaultStrategy,
 } from '@lib/dictionary/infrastructure/dictionary/sonaveeb/word-forms/strategies';
 import SonaVeebClient from '@lib/dictionary/infrastructure/dictionary/sonaveeb/api-client';
+import config from '@lib/global-config';
 
 export default {
 	async getDictionary(logger: Logger): Promise<ExternalDictionary> {
-		if (process.env.DICTIONARY === 'sonaveeb') {
+		if (config.dictionary.v1 === 'sonaveeb') {
 			const wordFormFinder = new WordFormsFinder([
 				new NounStrategy(),
 				new VerbStrategy(),

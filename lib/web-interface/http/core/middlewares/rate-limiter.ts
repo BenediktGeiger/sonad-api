@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import requestIp from 'request-ip';
+import config from '@lib/global-config';
 
 import { CustomError } from '@lib/web-interface/http/core/middlewares/error-handler';
 
@@ -15,10 +16,10 @@ const isWhiteListed = (origin: string): boolean => {
 
 const getRateLimit = (originalUrl: string): number | string => {
 	if (originalUrl.includes('v1/')) {
-		return process?.env?.RATE_LIMIT_V1 ?? 60;
+		return config.server.rateLimit.v1;
 	}
 
-	return process?.env?.RATE_LIMIT_V2 ?? 60;
+	return config.server.rateLimit.v2;
 };
 
 const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {

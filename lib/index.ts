@@ -1,15 +1,14 @@
 require('module-alias/register');
 import createServer from '@lib/web-interface/http/core/server';
 import { buildServices } from '@lib/config/service-locator';
-import dotenv from 'dotenv';
+import config from './global-config';
 
 (async () => {
 	try {
-		dotenv.config();
 		const services = await buildServices();
 		const server = createServer(services);
 
-		const port = process.env.PORT ?? 8083;
+		const port = config.server.port;
 		server.listen(port, () => {
 			services.logger.info({
 				message: `Server running on port ${port}!`,
