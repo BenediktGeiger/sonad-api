@@ -15,8 +15,6 @@ import ExternalDictionaryV2 from '@lib/dictionary/application/ports/external-dic
 import RequestLoggerFactory from '@lib/dictionary/infrastructure/request-logger';
 import RequestLogger from '@lib/dictionary/application/ports/request-logger.interface';
 import BusFactory from '@lib/shared/integration/bus';
-import StudiesLoggerFactory from '@lib/studies/infrastructure/logger';
-import StudenRepositoryFactory from '@lib/studies/infrastructure/persistence/studies';
 import StudiesService from '@lib/studies/application/studies-service';
 
 export type Services = {
@@ -42,14 +40,12 @@ export async function buildServices(): Promise<Services> {
 	const translator = await TranslatorFactory.getTranslator(logger);
 
 	const dictionaryService = new DictionaryService(dictionary, dictionaryCache, logger);
-	const dictionaryV2Service = new DictionaryV2Service(dictionaryV2, dictionaryCache, logger);
 	const translatorService = new TranslatorService(translator, logger);
 
-	const studiesLogger = await StudiesLoggerFactory.getLogger();
-	const studiesRepository = await StudenRepositoryFactory.getStudiesRepository();
-	const routingBus = await BusFactory.getRoutingBus(studiesRepository, studiesLogger);
+	const routingBus = await BusFactory.getRoutingBus(logger, dictionaryV2, dictionaryCache);
 	const studiesService = new StudiesService(routingBus);
 
+	const dictionaryV2Service = new DictionaryV2Service(routingBus);
 	const services = {
 		dictionaryService,
 		dictionaryV2Service,

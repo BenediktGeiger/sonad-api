@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import LoggerInterface from '@lib/dictionary/application/ports/logger.interface';
 import DictionaryService from '@lib/dictionary/application/dictionary-v2-service';
 import { CustomError } from '../middlewares/error-handler';
 import TranslatorService from '@lib/dictionary/application/translator-service';
@@ -7,15 +6,13 @@ import { AsciiService } from '@lib/ascii/ascii-service';
 import { DictionaryResponse } from '@lib/ascii/types';
 
 export default class DictionaryV2Controller {
-	private logger: LoggerInterface;
 	private dictionaryService: DictionaryService;
 	private translatorService: TranslatorService;
 	private asciiService: AsciiService;
 
-	constructor(logger: LoggerInterface, dictionaryService: DictionaryService, translatorService: TranslatorService) {
+	constructor(dictionaryService: DictionaryService, translatorService: TranslatorService) {
 		this.dictionaryService = dictionaryService;
 		this.translatorService = translatorService;
-		this.logger = logger;
 		this.asciiService = new AsciiService(); // move to service factory
 	}
 
@@ -32,7 +29,7 @@ export default class DictionaryV2Controller {
 
 		const translations = await this.getTranslations(req);
 
-		const result = await this.dictionaryService.getWord(estonianWordResult.estonianWord);
+		const result = await this.dictionaryService.searchWordQuery(estonianWordResult.estonianWord);
 
 		return {
 			...estonianWordResult,

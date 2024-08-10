@@ -40,11 +40,7 @@ export default (server: express.Express, services: Services) => {
 		services.logger
 	);
 
-	const dictionaryV2Controller = new DictionaryV2Controller(
-		services.logger,
-		services.dictionaryV2Service,
-		services.translatorService
-	);
+	const dictionaryV2Controller = new DictionaryV2Controller(services.dictionaryV2Service, services.translatorService);
 
 	const studiesController = new StudiesController(services.studiesService);
 
