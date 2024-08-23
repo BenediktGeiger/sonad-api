@@ -16,6 +16,13 @@ type WordForm = {
 	inflectionType: string;
 };
 
+type translation = {
+	[key in string]: {
+		words: string;
+		weight: number;
+	}[];
+};
+
 export default class DictonaryEkilex implements ExternalDictionaryV2 {
 	private logger: LoggerInterface;
 	private ekilexClient: EkilexClient;
@@ -57,11 +64,30 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 			? synonymLangGroup.synonyms.map((synonym) => synonym.words.map((word) => word.wordValue).join(','))
 			: [];
 
+		const translations = lexeme.synonymLangGroups.reduce((acc: translation, synonymLangGroup) => {
+			if (synonymLangGroup.lang === 'est') {
+				return acc;
+			}
+
+			synonymLangGroup.synonyms.forEach((synonym) => {
+				if (!acc[synonym.wordLang]) {
+					acc[synonym.wordLang] = [];
+				}
+				acc[synonym.wordLang].push({
+					words: synonym.words.map((word) => word.wordValue).join(','),
+					weight: synonym.weight,
+				});
+			});
+
+			return acc;
+		}, {});
+
 		return {
 			definition: definitions,
 			partOfSpeech: partOfSpeechTags,
 			examples: usages,
 			synonyms,
+			translations,
 		};
 	}
 
