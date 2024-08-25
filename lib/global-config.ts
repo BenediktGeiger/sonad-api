@@ -40,7 +40,7 @@ const config = {
 	},
 	logger: {
 		level: <string>process.env.LOGGER_LEVEL || 'info',
-		name: <string>process.env.LOGGER_NAME || 'axiom',
+		name: <string>process.env.LOGGER_NAME || 'winston',
 		axiom: {
 			dataset: <string>process.env.AXIOM_DATASET || 'sonapi',
 			token: <string>process.env.AXIOM_TOKEN || '',
