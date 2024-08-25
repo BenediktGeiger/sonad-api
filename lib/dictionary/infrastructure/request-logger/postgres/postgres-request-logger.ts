@@ -29,7 +29,7 @@ export default class PostgresRequestLogger implements RequestLogger {
 		} catch (error) {
 			this.logger.error({
 				message: 'Unable to store request',
-				method: 'logRequest',
+				context: 'LOG_REQUEST',
 				error: JSON.stringify(error),
 			});
 		}

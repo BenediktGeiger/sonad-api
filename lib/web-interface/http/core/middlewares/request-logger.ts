@@ -19,7 +19,7 @@ const requestLogger = async (req: Request, res: Response, next: NextFunction) =>
 	} catch (err) {
 		req.logger.error({
 			message: 'unable to log request',
-			method: 'requestLogger',
+			context: 'REQUEST_LOGGER',
 			error: JSON.stringify(err),
 		});
 	}

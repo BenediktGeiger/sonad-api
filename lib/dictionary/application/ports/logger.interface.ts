@@ -1,6 +1,6 @@
 export type LogPayload = {
 	message: string;
-	method: string;
+	context: string;
 	[x: string | number | symbol]: unknown;
 };
 
@@ -9,4 +9,5 @@ export default interface Logger {
 	warning(payload: LogPayload): void;
 	error(payload: LogPayload): void;
 	critical(payload: LogPayload): void;
+	debug(payload: LogPayload): void;
 }

@@ -14,14 +14,14 @@ export default class TranslatorSqlite implements Translator {
 			if (err) {
 				this.logger.error({
 					message: err?.message ?? 'Unable to connect to sqlite database',
-					method: 'TranslatorSqlite constructor',
+					context: 'DB_CONNECTr',
 				});
 
 				throw err;
 			}
 			this.logger.info({
 				message: 'Connected to the sql lite database.',
-				method: 'TranslatorSqlite constructor',
+				context: 'DB_CONNECT',
 			});
 		});
 	}
@@ -35,7 +35,7 @@ export default class TranslatorSqlite implements Translator {
 		} catch (err) {
 			this.logger.error({
 				message: 'Unable to query sqlite database',
-				method: 'translate',
+				context: 'translate',
 			});
 			return null;
 		}

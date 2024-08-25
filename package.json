@@ -5,9 +5,9 @@
 	"main": "lib/index.js",
 	"scripts": {
 		"build": "npx tsc",
-		"dev:build": "$(npm bin)/tsc -w",
+		"dev:build": "npx tsc -w",
 		"dev:run": "nodemon -e ts,tsc --exec \"node --inspect=5858 -r ts-node/register ./lib/index.ts\"",
-		"dev": "$(npm bin)/concurrently npm:dev:*",
+		"dev": "npx concurrently npm:dev:*",
 		"start": "NODE_ENV=production node dist/index.js",
 		"test": "jest --config ./config/jest.json",
 		"debug": "concurrently \"npx tsc --watch\" \"nodemon --inspect=1900 -q dist/index.js\"",
@@ -28,6 +28,7 @@
 		"tubli": "./lib/user-interfaces/cli/cli.js"
 	},
 	"dependencies": {
+		"@axiomhq/winston": "^1.1.1",
 		"@types/cors": "^2.8.12",
 		"@types/express": "^4.17.13",
 		"@types/node": "^18.7.6",

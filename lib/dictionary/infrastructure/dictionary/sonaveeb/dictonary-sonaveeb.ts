@@ -52,7 +52,7 @@ export default class DictonarySonaveeb implements ExternalDictionary {
 			console.log(err);
 			this.logger.error({
 				message: JSON.stringify(err),
-				method: 'getWord',
+				context: 'GET_WORD',
 			});
 			return left({
 				message: 'An unexpected error occurred',

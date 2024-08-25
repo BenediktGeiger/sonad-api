@@ -12,7 +12,8 @@ import config from './global-config';
 		server.listen(port, () => {
 			services.logger.info({
 				message: `Server running on port ${port}!`,
-				method: 'listen',
+				context: 'SERVER_START',
+				port,
 			});
 		});
 	} catch (err) {

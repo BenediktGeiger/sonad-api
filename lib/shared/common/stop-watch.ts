@@ -9,9 +9,9 @@ export const asyncStopWatch = <Func extends AsyncFunction>(func: Func, logger: L
 		const result = await func(...args);
 		const end = process.hrtime.bigint();
 		const elapsedTime = (Number(end - start) / 1000000).toFixed(2);
-		logger.info({
+		logger.debug({
 			message: `${func.name} execution time ${elapsedTime}ms`,
-			method: func?.name,
+			context: func?.name,
 			elapsedTime,
 			start,
 			end,
@@ -29,9 +29,9 @@ export const syncStopWatch = <Func extends SyncFunction>(func: Func, logger: Log
 		const result = func(...args);
 		const end = process.hrtime.bigint();
 		const elapsedTime = (Number(end - start) / 1000000).toFixed(2);
-		logger.info({
+		logger.debug({
 			message: `${func.name} execution time ${elapsedTime}ms`,
-			method: func?.name,
+			context: func?.name,
 			elapsedTime,
 			start,
 			end,

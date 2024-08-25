@@ -15,16 +15,16 @@ export default class LoggerBus implements Bus {
 	}
 
 	async execute(object: Command | Query): Promise<CommandHandlerResponse | QueryHandlerResponse> {
-		this.logger.info({
+		this.logger.debug({
 			message: 'start executing query/command',
-			method: 'LoggerBus',
+			context: 'LoggerBus',
 		});
 
 		const result = await this.bus.execute(object);
 
-		this.logger.info({
+		this.logger.debug({
 			message: 'finished executing query/command',
-			method: 'LoggerBus',
+			context: 'LoggerBus',
 		});
 
 		return result;

@@ -142,6 +142,13 @@ export default class DictionaryController {
 
 		const { lg } = req.query;
 
+		this.logger.info({
+			message: 'Incoming request',
+			context: 'CONTROLLER_API_V1',
+			requestedWord,
+			language: lg ?? 'et',
+		});
+
 		if (!lg || lg === 'et') {
 			return {
 				requestedWord,

@@ -31,9 +31,9 @@ const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
 
 	const { originalUrl } = req;
 
-	req.logger.info({
+	req.logger.debug({
 		message: `Request of ${clientIP} : ${origin}`,
-		method: 'rateLimiter',
+		context: 'RATE_LIMITER',
 		clientIp: clientIP,
 		origin,
 	});
@@ -41,7 +41,7 @@ const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
 	if (isWhiteListed(origin)) {
 		req.logger.info({
 			message: `${origin} is whitelisted`,
-			method: 'rateLimiter',
+			context: 'RATE_LIMITER',
 			origin,
 		});
 		return next();
@@ -52,9 +52,9 @@ const rateLimiter = async (req: Request, res: Response, next: NextFunction) => {
 	const hasReachedRateLimit = await req.rateLimiter.hasReachedRateLimit(key, rateLimit);
 
 	if (hasReachedRateLimit) {
-		req.logger.info({
+		req.logger.warning({
 			message: `${clientIP} has reached limit`,
-			method: 'rateLimiter',
+			context: 'RATE_LIMITER',
 			clientIp: clientIP,
 			origin,
 		});

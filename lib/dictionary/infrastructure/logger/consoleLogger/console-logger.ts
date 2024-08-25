@@ -1,17 +1,20 @@
 /* eslint-disable no-console */
-import LoggerInterface from '@lib/dictionary/application/ports/logger.interface';
+import LoggerInterface, { LogPayload } from '@lib/dictionary/application/ports/logger.interface';
 
 export default class ConsoleLogger implements LoggerInterface {
-	info(payload: { message: string; method: string }): void {
-		console.info(`method: ${payload.method}, message: ${payload.message}`);
+	info(payload: { message: string; context: string }): void {
+		console.info(`context: ${payload.context}, message: ${payload.message}`);
 	}
-	error(payload: { message: string; method: string }): void {
-		console.warn(`method: ${payload.method}, message: ${payload.message}`);
+	error(payload: { message: string; context: string }): void {
+		console.warn(`context: ${payload.context}, message: ${payload.message}`);
 	}
-	warning(payload: { message: string; method: string }): void {
-		console.warn(`method: ${payload.method}, message: ${payload.message}`);
+	warning(payload: { message: string; context: string }): void {
+		console.warn(`context: ${payload.context}, message: ${payload.message}`);
 	}
-	critical(payload: { message: string; method: string }): void {
-		console.error(`method: ${payload.method}, message: ${payload.message}`);
+	critical(payload: { message: string; context: string }): void {
+		console.error(`context: ${payload.context}, message: ${payload.message}`);
+	}
+	debug(payload: LogPayload): void {
+		console.debug(`context: ${payload.context}, message: ${payload.message}`);
 	}
 }

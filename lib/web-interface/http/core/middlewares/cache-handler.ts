@@ -6,7 +6,8 @@ const cacheHandler = async (req: Request, res: Response, next: NextFunction) => 
 	if (cachedResponse) {
 		req.logger.info({
 			message: 'Found cached response',
-			method: 'cacheHandler',
+			context: 'CACHE',
+			url: req.originalUrl,
 		});
 		return res.json(JSON.parse(cachedResponse));
 	}

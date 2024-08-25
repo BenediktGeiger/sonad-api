@@ -22,7 +22,7 @@ const normalizePath = (originalUrl: string) => {
 };
 
 const metrics = (req: Request, res: Response, time: number) => {
-	const { protocol, hostname, method, originalUrl } = req;
+	const { hostname, method, originalUrl } = req;
 	const { statusCode } = res;
 
 	const normalizedPath = normalizePath(originalUrl);
@@ -30,14 +30,28 @@ const metrics = (req: Request, res: Response, time: number) => {
 	if (normalizedPath.includes('metrics')) {
 		return;
 	}
-	req?.logger?.info({
-		message: `Response of ${method} ${protocol}://${hostname}${originalUrl} in ${time}ms with ${statusCode}`,
-		method: 'listen',
-		protocol,
+
+	const logBody = {
+		message: `Response ${originalUrl} in ${time}ms with ${statusCode}`,
+		context: 'METRICS',
+		method,
 		hostname,
+		responseTimeInMs: time,
 		originalUrl,
 		statusCode,
-	});
+	};
+
+	if (statusCode >= 500) {
+		req?.logger?.error(logBody);
+	}
+
+	if (statusCode >= 400 && statusCode < 500) {
+		req?.logger?.warning(logBody);
+	}
+
+	if (statusCode < 400) {
+		req?.logger?.info(logBody);
+	}
 
 	const labels = {
 		route: normalizedPath,

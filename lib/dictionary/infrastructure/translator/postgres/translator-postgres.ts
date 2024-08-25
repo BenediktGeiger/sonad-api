@@ -44,7 +44,7 @@ export default class TranslatorPostgres implements Translator {
 		} catch (error: any) {
 			this.logger.error({
 				message: `Unable to query postgress database: ${String(error?.message)}`,
-				method: 'translate',
+				context: 'TRANSLATE',
 			});
 			return null;
 		}
@@ -98,7 +98,7 @@ export default class TranslatorPostgres implements Translator {
 		} catch (error: any) {
 			this.logger.error({
 				message: `Unable to query postgress database: ${String(error?.message)}`,
-				method: 'getTranslations',
+				context: 'TRANSLATE',
 			});
 			return [];
 		}

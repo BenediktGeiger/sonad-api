@@ -4,16 +4,19 @@ import { CustomError } from '../middlewares/error-handler';
 import TranslatorService from '@lib/dictionary/application/translator-service';
 import { AsciiService } from '@lib/ascii/ascii-service';
 import { DictionaryResponse } from '@lib/ascii/types';
+import Logger from '@lib/dictionary/application/ports/logger.interface';
 
 export default class DictionaryV2Controller {
 	private dictionaryService: DictionaryService;
 	private translatorService: TranslatorService;
 	private asciiService: AsciiService;
+	private logger: Logger;
 
-	constructor(dictionaryService: DictionaryService, translatorService: TranslatorService) {
+	constructor(dictionaryService: DictionaryService, translatorService: TranslatorService, logger: Logger) {
 		this.dictionaryService = dictionaryService;
 		this.translatorService = translatorService;
 		this.asciiService = new AsciiService(); // move to service factory
+		this.logger = logger;
 	}
 
 	private getSearchResult = async (req: Request, next: NextFunction) => {
@@ -128,6 +131,13 @@ export default class DictionaryV2Controller {
 		const requestedWord = req?.params?.searchTerm;
 
 		const { lg } = req.query;
+
+		this.logger.info({
+			message: 'Incoming request',
+			context: 'CONTROLLER_API_V2',
+			requestedWord,
+			language: lg ?? 'et',
+		});
 
 		if (!lg || lg === 'et') {
 			return {

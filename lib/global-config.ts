@@ -39,7 +39,12 @@ const config = {
 		ttl: Number(process.env.CACHE_TTL) || 60,
 	},
 	logger: {
-		name: <string>process.env.LOGGER_NAME || '',
+		level: <string>process.env.LOGGER_LEVEL || 'info',
+		name: <string>process.env.LOGGER_NAME || 'axiom',
+		axiom: {
+			dataset: <string>process.env.AXIOM_DATASET || 'sonapi',
+			token: <string>process.env.AXIOM_TOKEN || '',
+		},
 	},
 };
 

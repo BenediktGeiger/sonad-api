@@ -41,7 +41,8 @@ export class GetDictionaryQueryHandler implements QueryHandler<GetDictionaryEntr
 		if (cachedDictionaryEntry) {
 			this.#logger.info({
 				message: `Cache hit with term:${searchTerm}`,
-				method: 'getDictionaryEntry',
+				searchTerm,
+				context: 'DICTIONARY',
 			});
 			try {
 				const dictionaryEntry = JSON.parse(cachedDictionaryEntry);
@@ -49,7 +50,7 @@ export class GetDictionaryQueryHandler implements QueryHandler<GetDictionaryEntr
 			} catch (error) {
 				this.#logger.error({
 					message: `Unable to parse cache entry`,
-					method: 'getDictionaryEntry',
+					context: 'DICTIONARY',
 				});
 
 				const result = await this.#externalDictionary.getDictionaryEntry(searchTerm);

@@ -153,7 +153,7 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 		} catch (err) {
 			this.logger.error({
 				message: 'Unable to query ekilex',
-				method: 'translate',
+				context: 'TRANSLATE',
 			});
 			throw err;
 		}

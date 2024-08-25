@@ -33,7 +33,7 @@ export default class SonaVeebClient {
 		} catch (err) {
 			this.logger.error({
 				message: JSON.stringify(err),
-				method: 'request',
+				context: 'REQUEST',
 			});
 			throw err;
 		}
