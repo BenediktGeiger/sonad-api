@@ -64,6 +64,8 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 			? synonymLangGroup.synonyms.map((synonym) => synonym.words.map((word) => word.wordValue).join(','))
 			: [];
 
+		const rection = lexeme?.governments.map((gov) => gov.value).join(',') ?? '';
+
 		const translations = lexeme.synonymLangGroups.reduce((acc: translation, synonymLangGroup) => {
 			if (synonymLangGroup.lang === 'est') {
 				return acc;
@@ -85,6 +87,7 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 		return {
 			definition: definitions,
 			partOfSpeech: partOfSpeechTags,
+			rection,
 			examples: usages,
 			synonyms,
 			translations,
