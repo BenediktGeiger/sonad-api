@@ -7,7 +7,7 @@ import { parse } from 'node-html-parser';
 
 import { EkilexClient } from '@vanakaru/ekilex-api-client';
 
-import { Forms, Lexeme, Paradigm } from '@vanakaru/ekilex-api-client/lib/src/resources/words';
+import { Forms, Government, Lexeme, Paradigm } from '@vanakaru/ekilex-api-client/lib/src/resources/words';
 
 type WordForm = {
 	code: string;
@@ -64,7 +64,7 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 			? synonymLangGroup.synonyms.map((synonym) => synonym.words.map((word) => word.wordValue).join(','))
 			: [];
 
-		const rection = lexeme?.governments.map((gov) => gov.value).join(',') ?? '';
+		const rection = lexeme?.governments.map((gov: Government) => gov.value).join(',') ?? '';
 
 		const translations = lexeme.synonymLangGroups.reduce((acc: translation, synonymLangGroup) => {
 			if (synonymLangGroup.lang === 'est') {
@@ -131,9 +131,9 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 			const wordDetails = await Promise.all(promises);
 
 			const result = wordDetails.map((wordDetail) => {
-				const wordClasses = [...new Set(wordDetail.paradigms.map((paradigm) => paradigm.wordClass))];
+				const wordClasses = [...new Set(wordDetail.word.paradigms.map((paradigm) => paradigm.wordClass))];
 
-				const wordForms = wordDetail.paradigms.map(this.extractWordFormsFromParadigm).flat();
+				const wordForms = wordDetail.word.paradigms.map(this.extractWordFormsFromParadigm).flat();
 
 				const rest = wordDetail.lexemes
 					.filter((lexeme) => lexeme.datasetCode === 'eki')
