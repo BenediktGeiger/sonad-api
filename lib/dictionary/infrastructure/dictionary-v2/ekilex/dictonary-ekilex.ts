@@ -101,25 +101,28 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 			return searchResult.words.map((word) => word.wordId);
 		}
 
-		const resultHtml = await this.sonaveebClient.getResultPage(searchTerm);
+		return searchResult.words.map((word) => word.wordId);
+		//  TODO fix
+		// Scraping https://sonaveeb.ee/search/unif/est/eki/tubil/1 is broken
+		// const resultHtml = await this.sonaveebClient.getResultPage(searchTerm);
 
-		const root = parse(resultHtml);
+		// const root = parse(resultHtml);
 
-		const otherForm = root.querySelector('[id=form-words] [data-word]');
+		// const otherForm = root.querySelector('[id=form-words] [data-word]');
 
-		if (!otherForm?.textContent) {
-			return [];
-		}
+		// if (!otherForm?.textContent) {
+		// 	return [];
+		// }
 
-		const newWord = otherForm.textContent;
+		// const newWord = otherForm.textContent;
 
-		const newSearchResult = await this.ekilexClient.words.search(newWord, ['eki']);
+		// const newSearchResult = await this.ekilexClient.words.search(newWord, ['eki']);
 
-		if (newSearchResult.totalCount > 0) {
-			return newSearchResult.words.map((word) => word.wordId);
-		}
+		// if (newSearchResult.totalCount > 0) {
+		// 	return newSearchResult.words.map((word) => word.wordId);
+		// }
 
-		return [];
+		// return [];
 	}
 
 	async getDictionaryEntry(searchTerm: string): Promise<DictionaryResponseV2> {
@@ -130,8 +133,10 @@ export default class DictonaryEkilex implements ExternalDictionaryV2 {
 
 			const wordDetails = await Promise.all(promises);
 
-			const result = wordDetails.map((wordDetail) => {
-				const wordClasses = [...new Set(wordDetail.word.paradigms.map((paradigm) => paradigm.wordClass))];
+			const wordDetaildWithParadigms = wordDetails.filter((wordDetail) => wordDetail?.word?.paradigms);
+
+			const result = wordDetaildWithParadigms.map((wordDetail) => {
+				const wordClasses = [...new Set(wordDetail?.word?.paradigms.map((paradigm) => paradigm.wordClass))];
 
 				const wordForms = wordDetail.word.paradigms.map(this.extractWordFormsFromParadigm).flat();
 

@@ -26,7 +26,8 @@ export default class RetryBus implements Bus {
 		} catch (error) {
 			// TODO this can be improved by checking specific error, and only retry if not known errors which will alway fail
 			if (retries < this.maxRetries) {
-				return this.executeWithRetry(retries++, object);
+				const retry = retries + 1;
+				return this.executeWithRetry(retry, object);
 			}
 			throw error;
 		}
